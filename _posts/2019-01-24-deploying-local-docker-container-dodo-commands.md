@@ -9,9 +9,9 @@ Introduction
 
 I use Docker for more or less all my local development. It allows me to test each project in an isolated environment that matches the server, with minimal dependencies on the host system. However, there are a few challenges with this approach:
 
-- compared to running everything on the host, it requires more work to inspect the system state
+- compared to running everything on the host, it requires more work to inspect the system state.
 - it can be hard to integrate data which is managed by containers into the IDE. The warnings produced by Facebook's Flow type checker (which I run in Docker) are a good example.
-- deploying a configuration to a Docker container is not straightforward
+- deploying a configuration to a Docker container is not straightforward.
 
 The latter challenge is sometimes met by using full-blown Dockerfiles to configure the container, but this undermines the idea of using the same code everywhere: when Salt or Ansible is used on the production server then it should be used for my containers as well. This article describes an approach to achieve this. I will focus on Salt, but the case for Ansible is similar.
 
@@ -25,12 +25,12 @@ A straight-forward way to deploy Salt scripts on containers is to install Salt i
 
 For these reasons, I prefer to install Salt in a Docker image that can be used to deploy to any container in any project. Thus we are tasked with:
 
-- installing Salt in a Docker image
-- installing the ssh-service in the target Docker image
-- running ssh-agent so that we only have to enter ssh-key passwords once
-- running ssh on the target container
-- copying our public ssh-key to `target:/root/.ssh/authorized_keys` so that Salt has ssh access
-- running Salt to deploy to the target container
+- installing Salt in a Docker image;
+- installing the ssh-service in the target Docker image;
+- running ssh-agent so that we only have to enter ssh-key passwords once;
+- running ssh on the target container;
+- copying our public ssh-key to `target:/root/.ssh/authorized_keys` so that Salt has ssh access;
+- running Salt to deploy to the target container.
 
 It seems like a lot of work, but most of the steps are automated with Dodo Commands. I will use the `--confirm` option in all Dodo Commands calls, so that we can still learn about the low-level calls that do the actual work.
 

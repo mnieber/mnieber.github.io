@@ -1,13 +1,13 @@
 ---
 layout: post
 title:  "CSS habits"
-date:   2019-01-24 18:42:59 +0100
-categories: CSS Tailwind BEM SMACSS
+date:   2019-01-31 18:42:59 +0100
+categories: CSS Tailwind BEM SMACSS Webpack
 ---
 Introduction
 ------------
 
-Few programmers would say that CSS is their favourite technology, but it has withstood the test of time fairly well, especially since (LESS)[http://lesscss.org/], (SASS)[https://sass-lang.com/] and more recently the (PostCSS)[https://postcss.org/] framework emerged as CSS extensions. Still, writing good CSS is hard. Although I am no expert on this topic, I've spent some time over the past years thinking and learning about strategies for creating CSS. In this article I will summarize my favourite solutions to the following challenges:
+Few programmers would say that CSS is their favourite technology, but it has withstood the test of time fairly well, especially since [LESS](http://lesscss.org/), [SASS](https://sass-lang.com/) and more recently the [PostCSS](https://postcss.org/) framework emerged as CSS extensions. Still, writing good CSS is hard. Although I am no expert on this topic, I've spent some time over the past years thinking and learning about strategies for creating CSS. I wrote this post not as a tutorial but as an inspiration as to how you might approach CSS. With this aim in mind, I will summarize my favourite solutions to the following challenges:
 
 - how to keep the set of CSS rules relatively small and lean?
 - how to reduce verbosity in CSS rules?
@@ -30,7 +30,7 @@ On a related note, I try to avoid adding a rule that corrects a previous rule. T
 Compact CSS
 -----------
 
-Compact CSS rules are easier on the eyes, since there is less code to read. I've found (Tailwind)[https://tailwindcss.com] to be great for creating compact CSS. It allows you to build styles with a set of small utility classes which - by using the right prefixes - can be applied selectively depending on page width, hover, focus, etc. Tailwind can be inlined in HTML elements, or used in CSS files via the `@apply` operator:
+Compact CSS rules are easier on the eyes, since there is less code to read. I've found [Tailwind](https://tailwindcss.com) to be great for creating compact CSS. It allows you to build styles with a set of small utility classes which - by using the right prefixes - can be applied selectively depending on page width, hover, focus, etc. Tailwind can be inlined in HTML elements, or used in CSS files via the `@apply` operator:
 
   {% highlight html %}
   <div class="button--large hover:mx-2">
@@ -47,16 +47,14 @@ Compact CSS rules are easier on the eyes, since there is less code to read. I've
 
 When styling a HTML element, I make a distinction between intrinsic and incidental style properties. The intrinsic properties should be applied to any instance of the element, and therefore should be described in a CSS file (using `@apply` if possible). The incidental properties such as margins depend on a particular use-case and can often be inlined in the HTML.
 
-Another way to achieve compact CSS is to use SASS mixins. As it's quite obvious how this removes duplication, I will not elaborate on it.
-
-When it comes to limiting the total size of all the CSS files, I've never had to worry too much because the impact on the load time of the webpage has always been small. If I needed to tackle this problem I would follow Tailwind's advise and use (PurgeCSS)[https://www.purgecss.com/].
+Another way to achieve compact CSS is to use SASS mixins. When it comes to limiting the total size of all the CSS files, I would follow Tailwind's advise and use [PurgeCSS](https://www.purgecss.com/).
 
 Naming
 ------
 
-Since using (BEM)[http://getbem.com/introduction/] for naming, I have not looked back, it just works. A key principle of BEM is that elements are styled with rules starting with the element name. There is no "large" modifier that can be used for buttons *and* badges, instead one uses names such as "checkout-page__button--large" and "badge--large". This can lead to some duplication, but it helps a lot when you want to change a rule without surprising side effects. If you really want to avoid duplication, it's always possible to capture common rules in a SASS mixin.
+Since using [BEM](http://getbem.com/introduction/) for naming, I have not looked back, it just works. A key principle of BEM is that elements are styled with rules starting with the element name. There is no "large" modifier that can be used for buttons *and* badges, instead one uses names such as "checkout-page__button--large" and "badge--large". This can lead to some duplication, but it helps a lot when you want to change a rule without surprising side effects. If you really want to avoid duplication, it's always possible to capture common rules in a SASS mixin.
 
-A known limitation of CSS is the lack of namespaces. One can add a project-specific prefix to all rules, but this extra verbosity is annoying and looks ugly. There is also the option of using (CSS Modules)[https://www.triplet.fi/blog/practical-guide-to-react-and-css-modules/], but I'm uncomfortable with using patterns such as `composes: baseButton from "./base_button.css";` in my CSS, especially when SASS is already handling composition adequately. Moverover, I object to seeing weird identifiers in the CSS when I debug the webpage in a browser. I'm generally willing to adopt a radically different solution, but in this case I think the price outweighs the benefit.
+A known limitation of CSS is the lack of namespaces. One can add a project-specific prefix to all rules, but this extra verbosity is annoying and looks ugly. There is also the option of using [CSS Modules](https://www.triplet.fi/blog/practical-guide-to-react-and-css-modules/), but I'm uncomfortable with using patterns such as `composes: baseButton from "./base_button.css";` in my CSS, especially when SASS is already handling composition adequately. Moverover, I object to seeing weird identifiers in the CSS when I debug the webpage in a browser. I'm generally willing to adopt a radically different solution, but in this case I think the price outweighs the benefit.
 
 In my recent projects (that were admittedly small) I have avoided the namespacing problem by relying only on Tailwind and custom CSS rules. This has an added benefit: when you start your CSS from scratch, there is no need to customize any rules provided by a framework such as Bootstrap. Avoiding such customizations means having less rules that correct a previous rule.
 
@@ -64,7 +62,7 @@ In my recent projects (that were admittedly small) I have avoided the namespacin
 Organizing CSS rules
 --------------------
 
-The first thing to consider is that the website may have distinct parts. For example, a financial app may have a customer onboarding part and a banking part, which may look different. In that case, it makes sense to create two sets of CSS files. Of course, these two sets - although they are separate - will follow the same logical structure. Following the advice offered by the (SMACSS)[https://smacss.com/] framework, I divide the rules in the following layers:
+The first thing to consider is that the website may have distinct parts. For example, a financial app may have a customer onboarding part and a banking part, which may look different. In that case, it makes sense to create two sets of CSS files. Of course, these two sets - although they are separate - will follow the same logical structure. Following the advice offered by the [SMACSS](https://smacss.com/) framework, I divide the rules in the following layers:
 
 - the **base** layer contains styles for basic elements such as `h1`. I consider Bootstrap elements such as `.card` to be basic elements too, so I would use the `base` layer to override them. Styling basic elements may seem a bad idea: what if the `h1` should look different in some part of the page? However, it has the benefit of emphasizing consistency: all `h1`'s *should* look the same in a consistent design. Moreover, the CSS becomes more compact if you avoid styling `h1` in various CSS classes. If you really need the `h1` to look different somewhere, you can still reset the style locally with ```{ all: unset; }```.
 - the **layout** layer contains rules for laying out bigger elements, e.g. the division of the HTML page in header, body and footer.

@@ -1,18 +1,27 @@
 ---
 layout: post
-title:  "Designing a React component using behaviours"
-date:   2019-01-21 11:56:59 +0100
+title: "Designing a React component using behaviours"
+date: 2019-01-21 11:56:59 +0100
 categories: react
 ---
-Introduction
-------------
+
+## Introduction
+
+---
+
+**NOTE**
+
+This article describes an older approach for separating domain layer concerns from presentation
+layer concerns. Since then, I have built on these ideas to create better ways to accompish
+this goal. See: .
+
+---
 
 Good software engineers know that writing software is to a large extent about separation of concerns, also known as modularization. It's easy to understand a well designed module because you can ignore the concerns that are handled by other modules. As a fan of React, I noticed that many of my components were hard to understand because they were mixing two concerns: a) the construction of an html element, and b) the behaviour of that html element when events are fired.
 
 To make things worse, my event handlers themselves were hard to understand. A single click handler could be updating `state.highlightedItem`, `state.isEditing`, and `state.displayedItems`. When this local state is also mutated in other event handlers, the interactions between the handlers get pretty hairy. In this article, I will describe an approach for capturing the behaviour of a React component in functions, leading to a more modular design.
 
-Global outline
---------------
+## Global outline
 
 Following the tradition of using a TodoApp example, I will implement a `TodoList` component with the following requirements:
 
@@ -40,13 +49,11 @@ These requirements will be implemented in a `TodoList` component with the follow
 
 As you can see, the properties are described with a `Flow` type. As an aside, I am using the `act` prefix for functions that are actions on the Redux store. Moreover, punning is used in this article to shorten `{foo: foo, bar: bar}` to `{foo, bar}`.
 
-Behaviours
-----------
+## Behaviours
 
-I define a behaviour to be a collection of variables and functions that capture one behavioural concern that the React component must deal with. For example, our third requirement refers to the concerns of creating a new todo and inserting a todo into the list. Therefore, our design will include a "insert todo" behaviour and a "new todo" behaviour that should be as separate as possible. Saving or discarding changes to a todo is captured in a "save todo" behaviour. Note that I did not try to capture *every* behaviour in a separate function. In two cases ("highlight todo" and "enable editing") I decided it was simpler to manage this state directly in `TodoList`.
+I define a behaviour to be a collection of variables and functions that capture one behavioural concern that the React component must deal with. For example, our third requirement refers to the concerns of creating a new todo and inserting a todo into the list. Therefore, our design will include a "insert todo" behaviour and a "new todo" behaviour that should be as separate as possible. Saving or discarding changes to a todo is captured in a "save todo" behaviour. Note that I did not try to capture _every_ behaviour in a separate function. In two cases ("highlight todo" and "enable editing") I decided it was simpler to manage this state directly in `TodoList`.
 
-Designing the "Insert todo" behaviour
--------------------------------------
+## Designing the "Insert todo" behaviour
 
 Let's focus first on inserting a todo. The following `Flow` type describes the "insert todo" behaviour:
 
@@ -95,9 +102,7 @@ You can look up the implementation of `useInsertTodo` in the [accompanying repos
     }
     {% endhighlight %}
 
-
-Designing the "New todo" behaviour
-----------------------------------
+## Designing the "New todo" behaviour
 
 The "New todo" behaviour should orchestrate everything that happens when the user clicks the "new todo" button. Note that this includes inserting the new todo into the list. Of course, insertion is a separate concern. Therefore, the "New todo" behaviour will use an instance of the "Insert todo" behaviour so that it can be agnostic of the details around insertion. The `NewTodoBvrT` type looks like this:
 
@@ -162,8 +167,7 @@ It can be used as follows:
 
 You may ask yourself: we passed in a `highlightedTodoId` to `useNewTodo`, so what happens when we later call `setHighlightedTodoId`? Indeed, this creates an inconsistency because `newTodoBvr` now contains a stale value. This can be corrected by recreating `newTodoBvr` with the latest value of `highlightedTodoId`. Fortunately, this is exactly what happpens when we use the behaviours in the `TodoList` component, because `TodoList` is re-rendered when the highlight changes.
 
-Designing the "Save todo" behaviour
------------------------------------
+## Designing the "Save todo" behaviour
 
 Finally, here is the code for for `SaveTodoBvrT`:
 
@@ -232,8 +236,7 @@ It can be used as follows:
     }
     {% endhighlight %}
 
-Implementing the behaviours
----------------------------
+## Implementing the behaviours
 
 The full implementation can be found in the [accompanying repository](https://github.com/mnieber/behaviours_example), but to illustrate a typical case, I will show the implementation of `useNewTodo`. Note that a React hook is used to store the new todo in the local state of `useNewTodo`, which allows us to properly isolate all code related to insertion.
 
@@ -282,8 +285,7 @@ The full implementation can be found in the [accompanying repository](https://gi
     }
     {% endhighlight %}
 
-Testing the behaviours
-----------------------
+## Testing the behaviours
 
 Since the behaviours are nicely separated from the React component, testing them is quite easy. The only complicating factor is that we need to create the behaviours inside a render function, since they rely on React hooks. Therefore, I'm using a `TestComponent` that creates the behaviours in a `sandbox` object which can be accessed from the test:
 
@@ -343,15 +345,13 @@ Since the behaviours are nicely separated from the React component, testing them
     };
     {% endhighlight %}
 
-Using the behaviours in TodoList
---------------------------------
+## Using the behaviours in TodoList
 
 The creation of the behaviours in `TodoList` looks similar to the `TestComponent` code above. The behaviours can be directly linked to click events. For example, the click event of `btnNewTodo` can be directly connected to `newTodoBvr.addNewTodo()`.
 
 It's important to note that the behaviours are recreated each time that `TodoList` is rendered. This ensures that each behaviour has up-to-date parameter values. For example, `newTodoBvr` always receives the latest `highlightedTodoId` so that new todo's are properly inserted below the highlighted one.
 
-Discussion
-----------
+## Discussion
 
 Some salient properties of the proposed approach are:
 
@@ -360,4 +360,4 @@ Some salient properties of the proposed approach are:
 3. Readability is improved a lot by using `Flow` to document the types.
 4. It's quite easy to test.
 
-In my experience, separating the behaviours of a component into functions forces the developer to think more deeply about the interactions between them. Before using behaviours I had local event handlers with access to *all* the state, and the code for creating items and saving them tended to become mixed up. In the proposed approach, each behaviour has its own local state, and interactions only happen via interfaces, as it should be.
+In my experience, separating the behaviours of a component into functions forces the developer to think more deeply about the interactions between them. Before using behaviours I had local event handlers with access to _all_ the state, and the code for creating items and saving them tended to become mixed up. In the proposed approach, each behaviour has its own local state, and interactions only happen via interfaces, as it should be.

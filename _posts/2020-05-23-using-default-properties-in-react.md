@@ -1,95 +1,118 @@
 ---
 layout: post
-title:  "Using default properties in React"
-date:   2020-05-23 16:21:59 +0100
-categories: react
+title: "Using default properties in React"
+date: 2020-05-23 16:21:59 +0100
+categories: react typescript
 ---
-Introduction
-------------
+
+## Introduction
 
 There are two standard ways in which React components receive properties:
+
 - the component can receive a property directly from the parent component, or
-- the component can receive a property from some kind of context. This context may be a global Redux store, or it may be a Context.Provider component.
+- the component can receive a property from some kind of context. This context may be global variable, or it may be a Context.Provider component.
 
-The first approach has the advantage that the parent component can control the value that is used by the child component. However, passing down all values by setting properties - so-called prop drilling - leads to very verbose code. The second approach avoids prop-drilling but makes it harder to customize the property value that goes into a component. In this blog post, I will describe a third approach that combines the first two: either the property value is received from the parent component or else the value comes from a context. I will refer to this as the "default properties" approach, where the default values come from the context. The source code that implements this approach is available on github:
+The first approach has the advantage that the parent component can control the value that is used by the child component. However, passing down all values by setting properties - so-called prop drilling - leads to very verbose code. The second approach avoids prop-drilling but makes it harder to customize the property value that goes into a component. In this blog post, I will describe a third approach based on Typescript that combines the first two: either the property value is received from the parent component or else the value comes from a context. I will refer to this as the "default properties" approach, where the default values come from the context. The source code that implements this approach is available on github: <url here>.
 
+Note that special efforts where made to ensure that the "default properties" approach works well with MobX, as will be explained below. The code is completely independent from MobX though, it only requires React.
 
-The mergeDefaultProps function
-------------------------------
+## The mergeDefaultProps function
 
-When a component uses default properties then it declares two Flow types which - by convention - are called PropsT and DefaultPropsT. The approach does not depend on Flow, but it's easier to catch mistakes if you use it. The component receives a list of properties `p` and enriches this list by merging in the default properties. The result is stored as `props`:
+When a component uses default properties then it declares two types which - by convention - are called PropsT and DefaultPropsT. The component receives a list of properties `p` and enriches this list by merging in the default properties. The result is stored as `props`:
 
 ```
+import { useDefaultProps, FC } from "react-default-props-context";
+
 type PropsT = {
   name: string,
-  defaultProps: any,
 };
 
 type DefaultPropsT = {
   color: string,
 }
 
-const MyComponent(p: PropsT) {
-  const props = mergeDefaultProps<PropsT & DefaultPropsT>(p);
+const MyComponent: FC<PropsT, DefaultPropsT> = (p: PropsT) => {
+  const props = useDefaultProps<PropsT, DefaultPropsT>(p);
 
-  // The color value comes either from p.color or p.defaultProps.color
-  const myText = <text color={props.color}>Hello</text>;
+  // The color value comes either from p.color or from a DefaultPropsContext.
+  return <text color={props.color}>Hello</text>;
+}
+```
 
-  // Use prop-drilling to pass props.defaultProps down to MyChildComponent.
-  // MyChildComponent may refer to default properties that exist
-  // in props.defaultProps but are not mentioned in DefaultPropsT.
-  const myChildComponent = <MyChildComponent defaultProps={props.defaultProps}/>;
+The `useDefaultProps` function creates a new object that has a special property lookup function. This lookup function will first try to resolve the property lookup using the members of `p` (the input argument of MyComponent). If the property is not found then it searches for a getter function in the nearest DefaultPropsContext which is invoked.
 
-  return <div>{myText}{myChildComponent}</div>;
-}```
+At this point, we need to clarify a few things:
 
-The `mergeDefaultProps` function creates a new object that has a special property lookup function. This lookup function will first try to resolve the property lookup using the members of `p` (the input argument of MyComponent). If the property is not found, then it will use the property name to look up a getter function in `p.defaultProps`. If this getter function is found then it is invoked to produce the property value. The reason for using a function instead of storing values directly in `p.defaultProps` is that this plays better with MobX, as will be explained later.
-Note that there is nothing special about `p.defaultProps`, it's just a dictionary that maps property names to getter functions. Each getter function takes no arguments and returns the property value. Flow will produce a warning if any property of `props` is accessed that does not exist in either PropsT or DefaultPropsT.
+- how are the default property values provided?
+- why are we using a getter function and not just a value?
+- what if we want to override the default property value?
 
-
-The DefaultPropsContext component
----------------------------------
-
-It's common in a React application to distinguish between "smart" components that are connected to a data-store, and "dumb" components that only receive property values and are agnostic of the world around them. When using default properties, the smart component can be responsible for creating the 'defaultProps` dictionary that is passed into the dumb components that need it.
-However, this scenario will not always work or be optimal. In some cases, the smart component is just a frame that is not directly responsible for rendering any child components. In that case, you can use a DefaultPropsContext to make the default properties available to any child component that needs it:
+To answer these questions, take a look at the example below:
 
 ```
-const SmartComponent = ({ children }) => {
+import { observer } from "mobx-react";
+import { useDefaultProps, FC } from "react-default-props-context";
+
+const MyFrame = observer(() => {
   const foo = getFoo();
+
   const defaultProps = {
-      color: () => "red",
-      bar: () => foo.bar,
-      // other properties...
-  }
+    color: () => "red",
+    bar: () => foo.bar,
+  };
 
   return (
     <DefaultPropsContext.Provider value={defaultProps}>
-      {children}
+      <MyComponent name="example" color="green"/>
     </DefaultPropsContext.Provider>
-  );
-}
+  )
+})
 ```
 
-Those of you who are familiar with MobX will now be able to understand why getter functions are used in `defaultProps`. If we would copy the value of `foo.bar` directly into the defaultProps dictionary then MobX would detect that we are referencing `foo.bar`. This means that any change in `foo.bar` would cause SmartComponent to be re-rendered, which is not what we want.
-One of the features of DefaultPropsContext is that it allows nesting. Any nested DefaultPropsContext instance should extend and override the default properties set by any parent DefaultPropsContext instances. You can code this manually but a more convenient way is to use the NestedDefaultPropsProvider component. In the example given below, if  AuthenticationRelatedDefaultProps and UserProfileRelatedDefaultProps both render a NestedDefaultPropsProvider then the combined set of default properties will be available to `{children}` via DefaultPropsContext.Consumer:
+We see that a DefaultPropsContext provides the dictionary of default property values. The
+`useDefaultProps` function uses this context to construct a new (merged) properties object. We also see
+that we can override the value for the default `color` property value by passing it into `MyComponent`.
+Note that you will get the usual Typescript warnings if you are trying to set a property on `MyComponent`
+that does not exist (as a regular property or a default property).
+
+As stated above, the defaultProps contains getter functions rather than just values. Since functions are more flexible than values this adds a bit of additional complexity and power. The real reason though has to do with MobX. If we were to copy the `foo.bar` value directly into `defaultProps` then MobX would notice that we are referencing it. That would mean that MyFrame might be rerendered more often than necessary. By using a getter function we avoid referencing `foo.bar`.
+
+One of the features of DefaultPropsContext is that it allows nesting. Any nested DefaultPropsContext instance should extend and override the default properties set by any parent DefaultPropsContext instances. You can code this manually but a more convenient way is to use the NestedDefaultPropsProvider component. In the example below, we add an additional instance of `MyComponent` with name "exampleInner"
+that uses an updated and extended set of default properties, where the color is "blue" and there is an additional `baz` property.
 
 ```
-const SmartComponent = ({ children }) => {
+import { observer } from "mobx-react";
+import { useDefaultProps, FC } from "react-default-props-context";
+
+const MyFrame = observer(() => {
+  const foo = getFoo();
+
+  const defaultProps = {
+    color: () => "red",
+    bar: () => foo.bar,
+  };
+
+  const defaultPropsInner = {
+    color: () => "blue",
+    baz: () => foo.baz,
+  };
+
   return (
-    <AuthenticationRelatedDefaultProps>
-        <UserProfileRelatedDefaultProps>
-          {children}
-        </UserProfileRelatedDefaultProps>
-    </AuthenticationRelatedDefaultProps>
-  );
-}
+    <NestedDefaultPropsProvider value={defaultProps}>
+      <MyComponent name="example"/>
+      <NestedDefaultPropsProvider value={defaultPropsInner}>
+        <MyComponent name="exampleInner/>
+      </NestedDefaultPropsProvider>
+    </NestedDefaultPropsProvider>
+  )
+})
 ```
 
-To facilitate this pattern, there is also a `NestedDefaultPropsProvider` component that automatically merges its default properties
+## Discussion
 
-Discussion
-----------
-
-A benefit from using default properties as described is that it avoids a lot of verbosity. The reason is that React contexts are not a natural choice for dumb React components. Therefore, even when React context are used, there is often a lot of prop-drilling to pass properties down to dumb components. However, using prop-drilling to pass down several properties in a single `defaultProps` dictionary is a relatively light-weight option.
-Moreover, using default properties allows for a lot of flexibility. Any parent component may decide to pass down a modified version of `defaultProps` to the sub-tree under that component.
-Finally, receiving a single set of default properties is - in my opinion - more agile than querying one or more React contexts for those values. Take "defaultProps.color" as an example. If a child component needs a default color then it usually doesn't need to know if this color is provided by a ThemeContext or by a UserPreferencesContext. In that case, using `defaultProps.color` seems more appropriate than receiving the color through ThemeContext.Consumer or UserPreferencesContext.Consumer.
+The benefit of using default properties as described is that it avoids prop-drilling, why still allowing you to customize the property values that
+a child component uses. By using nested DefaultPropsContext instances, you have a lot of flexibitily in deciding which parts of the render tree
+see which default values.
+This flexibility comes at a price though: default properties can originate from any DefaultPropsContext instance higher up in the tree. In this sense, it is different from most other React contexts. Another way to put it is that when a component declares that it accepts a default property, it doesn't care where this property comes from, as long as it's provided by a DefaultPropsContext. And if it tries to use a value that no DefaultPropsContext provides, then a run-time error will be generated (Typescript cannot help us there).
+In my experience, the benefits easily outweight the drawbacks. DefaultPropsContext allows you to get information to the place where it is required, without the need to jump through hoops. This results in shorter and more readable code, that is easier to refactor. So if prop-drilling
+in your code gets out of hand, I would recommend to give this a try.

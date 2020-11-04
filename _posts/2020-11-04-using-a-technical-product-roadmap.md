@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Using a Technical Product Roadmap to create team alignment"
-date: 2020-28-10 16:21:59 +0100
+date: 2020-10-28 16:21:59 +0100
 categories: project management
 ---
 

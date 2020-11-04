@@ -7,14 +7,12 @@ categories: project management
 
 ## Introduction
 
-To effectively work together as a software development team it is critically important
-that the team is aligned on the product vision and planning, both in the short term
-and in the medium term. This includes:
+To effectively work together as a software development team it is vital that the team is aligned
+on the product vision and planning, both in the short and medium term. This includes:
 
-- understanding the user requirements so that team members can agree on what the product tries
-  to achieve
+- understanding the user requirements so that it's clear what the product tries to achieve
 - sharing an ubiqitous language so that key terms have the same meaning to all team members
-- having a shared understanding of the product development plan, so that team members do not
+- having a shared awareness of the product development plan, so that team members do not
   work at cross purposes
 
 Almost all companies I have worked with struggle with creating this alignment. Teams often rely on the
@@ -27,62 +25,59 @@ roadmap document, including a small example, and discuss how it can aid team ali
 The main reasons why a Product Backlog fails to create team alignment are:
 
 - it's tedious to read. The usual way to present written information is as a narrative, where text further
-  down builds on the text that preceeds it. Because Product Backlog stories are meant to be self-contained
-  they are repetitive, and there is no natural flow leading from one story to the other. Moreover, the reader
-  has to open and close the stories to read them. All of this makes reading backlog stories unpleasant and
-  unrewarding.
+  down builds on the text that preceeds it. Product Backlogs are different. Because stories are meant to be
+  self-contained they are repetitive, and there is no natural flow leading from one story to the other.
+  Moreover, the reader has to open and close the stories to read them. All of this makes reading backlog
+  stories unpleasant and unrewarding.
 
-- it lacks structure. Maybe the top will be ordered, but the rest will have an almost random order.
+- it lacks structure. Maybe the top stories will be ordered, but the rest will have an almost random order.
   That rest will contain both interesting and important stories and quick braindumps that are basically noise.
   And again, since the stories are meant to be self-contained, it's hard to see how they are related. It's like
   trying to understand a picture by looking at one puzzle piece at the time, and having to guess along the way
   how the pieces fit together.
 
 - it lacks a user perspective. While it's usually possible to imagine how a story helps the user to achieve their
-  goals, it's hard to reconstruct an entire user workflow from reading backlog stories. And when it comes to user
-  workflows, the devil is in the details. User workflows tend to change in important ways once you start to work on
-  getting the details right. Figuring these details out sooner rather then later helps to align the team on the
-  development plan.
+  goals, it's hard to reconstruct an entire user workflow from reading backlog stories. And when it comes to
+  workflows, the devil is in the details. Workflows tends to change in important ways once you try to get the
+  details right. Figuring these out sooner rather then later helps to align the team on the development plan.
 
 As a result, people will not want to read the backlog, and when they do, they will struggle to obtain
 an impression of what the team will be working on in the next few months, and where the product will be.
 Usually, documents that describe the short and medium term plans exist alongside the backlog, but it tends
 to be unclear how these plans relate to the question of what the team will do in the next months.
 
-In the end, it often turns out that the actual plan exists mostly in the heads of the team-members,
-and it's communicated by talking. The biggest drawback of this situation is that it never becomes clear
-which tradeoffs are made between the different options for improving the product. When information
-about possible next steps is scattered then weighing the options quickly becomes complex and overwhelming.
-As a result, nobody will feel responsible for doing this important work, and when it's time to do the sprint
-planning, some pragmatic ad-hoc choices will be made. This situation leads to poor planning choices.
-Moreover, the lack of accountability for deciding the plan means that the team will not be able to
-learn from past planning mistakes.
+In the end, it often happens that the actual plan exists mostly in the heads of the team-members,
+and is communicated by talking. This reduces transparency about the tradeoffs that are made
+between the different options for improving the product. When information about possible next steps is scattered
+then weighing the options quickly becomes complex and overwhelming. As a result, nobody will feel responsible for
+doing this important work, and when it's time to do the sprint planning, some pragmatic ad-hoc choices will be made.
+This situation leads to poor planning choices. Moreover, the lack of accountability for deciding the plan means that
+the team will not be able to learn from past planning mistakes.
 
 ## What is a Technical Product Roadmap?
 
 By a Technical Product Roadmap I mean a document with the following properties:
 
 - it contains milestones that describe a user workflow with enough product detail to clarify the user
-  experience. It should also have enough technical key details to give some guidance and constraints
-  regarding the implementation
-- each milestone typically describes a few weeks of work and fits an A4 paper. It should be a concise
-  and easy to read text that may link to other documents that give more details.
-- a milestone focusses on user workflows but may also describe purely technical tasks
-- the roadmap contains a glossary that explains all the key terms (this helps to keep milestone descriptions
+  experience. In addition it contains enough technical key details to give some guidance and constraints
+  regarding the implementation.
+- its milestones typically describe a few weeks of work and fit an A4 paper. Because each milestone should be
+  concise and easy to read, it will usually refer to other documents for details.
+- it contains a glossary that explains all the key terms (this helps to keep milestone descriptions
   compact)
-- upcoming milestones should be precise. This mean they should not have obvious gaps in explaining how the
-  product will behave or leave important implementation questions unanswered. On the other hand, milestones
-  that are further in the future will be much more sketchy.
 - it should be an authoritative document, in the sense that there are no parallel documents that are also
   a source of truth for what the team will be working on.
 
-The first point is the most important one. A technical product roadmap focuses on a desired user experience,
-and outlines a technical approach for implementing it. It should not try to answer every question related
-to user experience and implementation. Instead, it should have just enough information to give the reader an
-impression of how the product will behave and how that behaviour will be implemented. As stated, where
-appropriate it can and should refer to other documents for more detailed technical discussions.
+The first and last points are the most important ones, because they ensure that people will read the roadmap
+and agree on the priorities that it describes. The roadmap should therefore not try to answer every question
+related to user experience and implementation. Instead, it should have just enough information to give the reader
+an impression of what the priorities are, how the product will behave and how that behaviour will be implemented.
 
-The last point is also important, because otherwise there will be no real transparancy about priorities.
+Note that besides user workflows a milestone may also describe purely technical tasks. The intention should be
+though to direct all work in a milestone to a common goal that is summarized in the milestone title. Milestones
+that are upcoming should not have obvious gaps in explaining how the product will behave or leave important
+implementation questions unanswered. On the other hand, milestones that are further in the future will be more
+sketchy.
 
 ## An example of a milestone
 
@@ -90,7 +85,7 @@ I will use the example of a website that allows user to share lists of dance mov
 The website can be used by people who want to learn how to dance. One of the product requirements is
 that some videos should not be made available to all users. This is because some dance teachers make
 videos available to their students but do not want these videos to spread to the whole internet.
-The example milestone below is smaller than usual for reasons of brevity, but it shows the idea.
+The example milestone below is much smaller than usual for reasons of brevity, but it shows the idea.
 
 ### Glossary
 
@@ -134,8 +129,8 @@ if they contain certain disallowed words.
 
 Point 1.1 of the milestone illustrates how certain details are left out: it doesn't say how the user
 can send a request to become an uploader. Maybe there is a contact form, or maybe there is an email address.
-Since this information is left out we can conclude that this topic is apperently not interesting enough to detail it here.
-Similarly, in point 2.1 it's not stated which fields are required and which are optional, because this is not
+Since this information is left out we can conclude that this topic is apperently not important enough to detail it
+here. Similarly, in point 2.1 it's not stated which fields are required and which are optional, because this is not
 essential information for the roadmap. If a user story is added to a Scrum sprint for this feature then it probably
 will specify this information.
 
@@ -146,9 +141,9 @@ more self-contained.
 Point 5 shows an example of mixing implementation details (5.1) and features (5.2). In my opinion it's important to
 add key implementation decisions to the roadmap because the whole team should be on the same page about them.
 If the decision to use immutable data and domain events is controversial then it helps to make this information visible
-in a place where people can discuss this and sign-off on it. Without this information you cannot claim that the team is
-aligned on the plan. Note that it's enough to outline the technical approach, the details can be described in other
-documents.
+in a place where people can discuss this and sign-off on it before the implementation starts. Without this information
+you cannot claim that the team is aligned on the plan. Note that it's enough to outline the technical approach,
+the details can be described in other documents.
 
 ## How a Technical Product Roadmap creates team alignment
 
@@ -161,13 +156,12 @@ and propose changes, which leads to a discussion and eventually to an updated mi
 changes will not mean that the goal of an ongoing sprint also changes, just that it's achieved in a somewhat
 different way.
 
-The technical product roadmap invites you to think things through on paper (the value of which is often
-underestimated, in my opinion). This is less agile than what Scrum or Kanban advocates, but it does leave
-room for figuring things out during development. In fact, this is necessary to keep the milestone descriptions
-concise and readable. Interweaving the description of the user experience with key implementation details
-helps to ensure that the implementation choices are grounded in the user requirements. This is
-important because surprisingly often the implementation is driven by what is technically possible rather than
-following the most effective way to create the user experience.
+The technical product roadmap invites you to think things through on paper (I believe the value of this is often
+underestimated). This is less agile than what Scrum or Kanban advocates, but it does still leave room for figuring
+things out during development. In fact, this is necessary to keep the milestone descriptions concise and readable.
+Interweaving the description of the user experience with key implementation details helps to ensure that the implementation
+choices are grounded in the user requirements. This is important because surprisingly often the implementation is driven
+by what is technically possible rather than following the most effective way to create the user experience.
 
 Finally, the inclusion of a glossary helps a lot in creating a common understanding in the team about the main
 domain and implementation concepts. Creating the glossary will be a process of exploration and discussion

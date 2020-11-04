@@ -81,7 +81,7 @@ sketchy.
 
 ## An example of a milestone
 
-I will use the example of a website that allows user to share lists of dance move videos.
+I will use the example of a website that allows users to share lists of dance move videos.
 The website can be used by people who want to learn how to dance. One of the product requirements is
 that some videos should not be made available to all users. This is because some dance teachers make
 videos available to their students but do not want these videos to spread to the whole internet.
@@ -125,11 +125,11 @@ concepts, and to a certain extent, the behaviour of the application follows from
 Ideally, every step in a milestone contributes to some overarching goal that is summed up in the milestone title.
 Usually a milestone describes a viable version of a workflow, but not the ultimate version. In future milestones
 the workflow may be updated and refined. For example, a future milestone can state that move titles are rejected
-if they contain certain disallowed words.
+if they contain disallowed words.
 
 Point 1.1 of the milestone illustrates how certain details are left out: it doesn't say how the user
 can send a request to become an uploader. Maybe there is a contact form, or maybe there is an email address.
-Since this information is left out we can conclude that this topic is apperently not important enough to detail it
+Since this information is left out we can conclude that this topic is apperently not important enough to be detailed
 here. Similarly, in point 2.1 it's not stated which fields are required and which are optional, because this is not
 essential information for the roadmap. If a user story is added to a Scrum sprint for this feature then it probably
 will specify this information.

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Facet based development"
+title: "Inserting facets into React components"
 date: 2020-05-26 16:21:59 +0100
 categories: react
 ---

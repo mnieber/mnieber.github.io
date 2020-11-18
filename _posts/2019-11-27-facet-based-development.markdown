@@ -69,16 +69,16 @@ class UsersCtr {
 
   _installActions() {
     installActions(this.selection, { //       [2]
-      selectItem: [
-        lbl("select", handleSelectItem),
-        highlightFollowsSelection
+      selectItem: {
+        select: [handleSelectItem],
+        select_post: [highlightFollowsSelection]
       ]
     })
 
     installActions(this.highlight, {
-      highlightItem: [
-        handleHighlightItem,
-      ]
+      highlightItem: {
+        highlightItem: [handleHighlightItem],
+      }
     })
 
     // other actions omitted
@@ -106,9 +106,8 @@ Notes:
    the facet instance using `getCtr(facet)`
 
 2. the `installActions` function installs callback functions for the "selectItem" operation of the `Selection` facet and for the
-   "highlightItem" operation of the `Highlight` facet. The "selectItem" operation has two callbacks: `handleSelectItem` (which is
-   labelled with "select") and `highlightFollowsSelection` (which has no label). As we shall see later, this has the effect that
-   after `handleSelectItem` is called, the `highlightFollowsSelection` function is also invoked.
+   "highlightItem" operation of the `Highlight` facet. The "selectItem" operation has two callbacks: `handleSelectItem` (which handles the
+   "select" trigger) and `highlightFollowsSelection` (which is called after the "select" trigger was handled).
 
 3. the `_installPolicies()` function sets up additional rules inside the container. Often these rules declare data mappings that route
    information from one facet to the other. The `mapData` function creates this mapping using MobX such that the output is updated

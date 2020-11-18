@@ -34,7 +34,9 @@ const MyComponent: FC<PropsT, DefaultPropsT> = (p: PropsT) => {
 }
 ```
 
-The `useDefaultProps` function creates a new properties object with a special lookup function. This lookup function will first try to resolve the property using the members of `p` (the input argument of MyComponent). If unsuccessfull it will resolve the property by looking for a getter function in the nearest DefaultPropsContext. If still unsuccessfull, a run-time error is produced.
+The `useDefaultProps` function creates a new properties object with a special lookup function. This lookup function will first try to resolve
+the property using the members of `p` (the input argument of MyComponent). If unsuccessfull it will resolve the property by looking for a
+getter function in the nearest DefaultPropsContext. If still unsuccessfull then `undefined` is returned.
 
 At this point, we need to clarify a few things:
 
@@ -118,7 +120,7 @@ of the render tree see which default values.
 This flexibility comes at a price though: default properties can originate from any DefaultPropsContext instance higher up in the tree.
 In this sense, it is different from most other React contexts. To put it in another way: when a component declares that it accepts a
 default property, it doesn't care where this property comes from, as long as it's provided by a DefaultPropsContext. If it tries to use a
-value that no DefaultPropsContext provides, then a run-time error will be generated (Typescript cannot help us there).
+value that no DefaultPropsContext provides, then it will return `undefined` (Typescript cannot help us with a warning there).
 In my experience, the benefits easily outweight the drawbacks. DefaultPropsContext allows you to get information to the place where it is
 required, without the need to jump through hoops. This results in shorter and more readable code, that is easier to refactor. So if prop
 drilling in your code gets out of hand, I would recommend to give this a try.

@@ -50,7 +50,7 @@ To answer these questions, take a look at the example below:
 
 ```
 import { observer } from "mobx-react";
-import { useDefaultProps, FC } from "react-default-props-context";
+import { DefaultPropsContext } from "react-default-props-context";
 
 const MyFrame = observer(() => {
   const foo = getFoo();
@@ -88,7 +88,7 @@ way is to use the NestedDefaultPropsProvider component. In the example below, we
 
 ```
 import { observer } from "mobx-react";
-import { useDefaultProps, FC } from "react-default-props-context";
+import { NestedDefaultPropsProvider } from "react-default-props-context";
 
 const MyFrame = observer(() => {
   const foo = getFoo();

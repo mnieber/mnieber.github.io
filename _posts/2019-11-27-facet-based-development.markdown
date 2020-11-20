@@ -8,7 +8,10 @@ categories: react
 ## Introduction
 
 When we program a React application we use existing components and libraries such as drop down buttons, state managers and HTTP clients. These components are fairly basic in the sense that they do not determine how the application behaves. For example, there is no reusable component to ensure that selected items also get highlighted, even though many applications need this kind of behaviour.
-This article describes why two popular ways to make behaviours reusable have not been very successful. It then briefly explains two approaches that inspired my own approach: Template Methods and what I will call Smart Containers (I read about this approach in a white paper which I unfortunately cannot find anymore). From there I will outline the requirements for my approach, and explain how they are met.
+This article describes why two popular ways to make behaviours reusable have not been very successful. It then briefly explains two approaches that
+inspired my own approach: Template Methods and what I will call Smart Containers. From there I will outline the requirements for my approach, and
+explain how they are met. The source code can be found [here](https://github.com/mnieber/facet) and
+[here](https://github.com/mnieber/facet-mobx).
 
 ## Reusing behaviour using frameworks and OOP
 

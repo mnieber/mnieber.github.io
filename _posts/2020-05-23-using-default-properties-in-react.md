@@ -8,7 +8,8 @@ categories: react typescript
 ## Introduction
 
 When passing properties in React application one usually chooses between so-called prop drilling and React contexts. Both have their cons and pros. Prop drilling means passing the properties down from the parent to the child component. It has the advantage that the parent component can control the values that are used by the child component but can lead to very verbose code. The opposite is true when contexts are used: concise code but no control over the properties of the child component. In this blog post, I will describe a third approach based on Typescript that combines the first two: either the property value is received from the parent component or else the value comes from a DefaultPropsContext. I will refer to this as the "default properties" approach. The source code that implements this approach is available on
-[github](https://github.com/mnieber/react-default-props-context). In a
+[github](https://github.com/mnieber/react-default-props-context) and can be installed via
+[npm](https://www.npmjs.com/package/react-default-props-context). In a
 [follow-up post](https://mnieber.github.io/react/2020/05/26/inserting-facets-into-react-components.html) I will describe how you can use default properties in data containers.
 
 **Note**: the "default properties" approach is designed to be compatible with MobX. The code is completely independent from MobX though, it only requires React.

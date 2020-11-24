@@ -10,8 +10,8 @@ categories: react
 When we program a React application we use existing components and libraries such as drop down buttons, state managers and HTTP clients. These components are fairly basic in the sense that they do not determine how the application behaves. For example, there is no reusable component to ensure that selected items also get highlighted, even though many applications need this kind of behaviour.
 This article describes why two popular ways to make behaviours reusable have not been very successful. It then briefly explains two approaches that
 inspired my own approach: Template Methods and what I will call Smart Containers. From there I will outline the requirements for my approach, and
-explain how they are met. The source code can be found [here](https://github.com/mnieber/facet) and
-[here](https://github.com/mnieber/facet-mobx).
+explain how they are met. The source code can be found [here](https://github.com/mnieber/facility) and
+[here](https://github.com/mnieber/facility-mobx).
 
 ## Reusing behaviour using frameworks and OOP
 
@@ -66,19 +66,21 @@ class UsersCtr {
 
   constructor() {
     registerFacets(this); //                  [1]
-    this._installActions();
+    this._setCallbacks();
     this._installPolicies();
   }
 
-  _installActions() {
-    installActions(this.selection, { //       [2]
+  _setCallbacks() {
+    setCallbacks(this.selection, { //       [2]
       selectItem: {
-        select: [handleSelectItem],
-        select_post: [highlightFollowsSelection]
+        select: [
+          handleSelectItem,
+          highlightFollowsSelection
+        ],
       ]
     })
 
-    installActions(this.highlight, {
+    setCallbacks(this.highlight, {
       highlightItem: {
         highlightItem: [handleHighlightItem],
       }
@@ -108,9 +110,9 @@ Notes:
 1. the `registerFacets` function ties the facet instances to the container. This makes it possible to get the container instance from
    the facet instance using `getCtr(facet)`
 
-2. the `installActions` function installs callback functions for the "selectItem" operation of the `Selection` facet and for the
+2. the `setCallbacks` function installs callback functions for the "selectItem" operation of the `Selection` facet and for the
    "highlightItem" operation of the `Highlight` facet. The "selectItem" operation has two callbacks: `handleSelectItem` (which handles the
-   "select" trigger) and `highlightFollowsSelection` (which is called after the "select" trigger was handled).
+   "select" trigger) and `highlightFollowsSelection` (which is called afterwards).
 
 3. the `_installPolicies()` function sets up additional rules inside the container. Often these rules declare data mappings that route
    information from one facet to the other. The `mapData` function creates this mapping using MobX such that the output is updated
@@ -197,7 +199,7 @@ Notes:
 
 In the example we saw that highlighting is synchronized with selection even though the `Selection` facet has no knowledge of the `Highlight`
 facet. This is a key property of the proposed approach: facets can interact without knowing about each other. These interactions are
-orchestrated in the `_installActions` and `_installPolicies` functions of the container. The `_installActions` function installs callback
+orchestrated in the `_setCallbacks` and `_installPolicies` functions of the container. The `_setCallbacks` function installs callback
 functions that have access to the entire container, which allows them to access and update multiple facets. The `_installPolicies` function
 installs mapping functions (and possibly other interactions) that map data from one facet to the other. So although this is not truly a Smart
 Container that magically detects the components that live inside it, the container still plays the role of a mediator and orchestrator.

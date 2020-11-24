@@ -12,8 +12,9 @@ categories: react
 **NOTE**
 
 This article describes an older approach for separating domain layer concerns from presentation
-layer concerns. Since then, I have built on these ideas to create better ways to accompish
-this goal. See: .
+layer concerns. Since then, I have built on these ideas to create
+[better ways](https://mnieber.github.io/react/2019/11/27/facet-based-development.html) to accompish
+this goal.
 
 ---
 

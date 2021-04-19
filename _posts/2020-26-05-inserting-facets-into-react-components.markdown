@@ -15,7 +15,7 @@ concepts of containers, facets and default properties.
 
 ## The CtrProvider component
 
-The CtrProvider class is a helper component for creating container instances that takes two arguments:
+The CtrProvider class is a helper component for creating container instances that takes three arguments:
 
 - a `createCtr` function that is invoked only once to instantiate the container
 - an `updateCtr` function sets up a MobX reaction that keeps the inputs of the container up-to-date

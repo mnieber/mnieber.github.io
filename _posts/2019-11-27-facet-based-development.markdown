@@ -8,15 +8,23 @@ categories: react
 ## Introduction
 
 When we program a React application we use existing components and libraries such as drop down buttons, state managers and HTTP clients. These components are fairly basic in the sense that they do not determine how the application behaves. For example, there is no reusable component to ensure that selected items also get highlighted, even though many applications need this kind of behaviour.
-This article introduces my own approach for programming reusable behaviours. But first I will describe why two popular ways to make behaviours reusable have not been very successful. I then briefly explain two approaches that inspired my own approach: Template Methods and what I will call Smart Containers. From there I will outline the requirements for my approach, and explain how they are met. The source code can be found [here](https://github.com/mnieber/facility) and [here](https://github.com/mnieber/facility-mobx).
+This article introduces my own approach for programming reusable behaviours. But first I will describe why two popular ways to make behaviours reusable have not been very successful. I then briefly explain two approaches that inspired my own approach: Template Methods and what I will call Smart Containers. From there I will outline the requirements for my approach, and explain how they are met. The source code for my library (called SkandhaJS) can be found [here](https://github.com/mnieber/skandha)
+and [here](https://github.com/mnieber/skandha-mobx).
 
-## Reusing behaviour using frameworks and OOP
+## Approaches that fail to enable reusable behaviour
 
-Frameworks offer not just components but also behaviours such as selection, highlighting, drag-and-drop, etc. They are considered to be a good choice for less professional programmers but too prescriptive for more experienced people. The reason is that as long as you follow the patterns offered by the framework then things work fine, but customizing the behaviour usually amounts to breaking into a black box. Trying to go against the expectation of an existing module - which is what "breaking into something" is all about - tends to have unexpected consequences and leads to code that is hard to understand and maintain.
+### Reusing behaviour using frameworks
 
-This is also why - as Rich Hickey observed - object oriented programmed has failed to deliver on its promise of making code reusable. Suppose you have a DoFoo class. You want to add a DoBar class and you see the potential to reuse DoFoo. Usually DoFoo will have code that is specifically there to support Foo and gets in the way of DoBar. You can try to make a common base-class that has only the "useful common bits" that serve both the purpose of DoFoo and DoBar. This will work if neither DoFoo nor DoBar needs to break into these common bits, otherwise you are back to square one. Moreover, it often happens that the base class is just an ad-hoc collection of "useful bits" that has no easily recognizable purpose. Such classes make a code-base hard to understand and maintain.
+Frameworks offer not just components but also behaviours such as selection, highlighting, drag-and-drop, etc. They are considered to be useful but also limiting. The reason is that as long as you follow the patterns offered by the framework then things work fine, but customizing the behaviour usually amounts to breaking into a black box. Trying to go against the expectation of an existing module - which is what "breaking into something" is all about - tends to have unexpected consequences and leads to code that is hard to understand and maintain.
 
-## Template Method
+### Reusing behaviour using OOP
+
+As Rich Hickey observed, Object Oriented Programmed (which, by the way, I do like) has failed to deliver on its promise of making
+code reusable. Suppose you have a DoFoo class. You want to add a DoBar class and you see the potential to reuse DoFoo. Usually DoFoo will have code that is specifically there to support Foo and gets in the way of DoBar. You can try to make a common base-class that has only the "useful common bits" that serve both the purpose of DoFoo and DoBar. This will work if neither DoFoo nor DoBar needs to break into these common bits, otherwise you are back to square one. Moreover, it often happens that the base class is just an ad-hoc collection of "useful bits" that has no easily recognizable purpose. Such classes make a code-base hard to understand and maintain.
+
+## Approaches that inspired SkandhaJS
+
+### Template Method
 
 Template Methods were successfully used in the Erlang language to create reusable behaviours. In this design pattern there is a
 template that dictates the order of the main steps in a procedure, and callback functions that provide the implementation of these
@@ -32,7 +40,7 @@ def goToProtectedPage():
 
 This looks superfically similar to OOP where member functions can be overridden, but there is an important difference that has to do with granularity. Callback functions are fine grained: they can be mixed and matches. With OOP, every time you override a class you create a new type, without the possibility to match bits and pieces of these classes at will. Moreover, adding a type increases the complexity of the application. With a Template Method you are free to use any combination of callback functions, without the need to add types.
 
-## Smart Containers
+### Smart Containers
 
 In this approach that I read about many years ago (in a white-paper that I unfortunately cannot find anymore), every module exists in a container. Each module can detect and use the other modules in the container. For example, a ShowPage module can detect a PasswordVerifier module in its container and use it before showing a page to the user. This allows you as a programmer to reuse behaviours by mixing and matching the right modules in your container. I don't claim that this is necessarily a good way to create applications, but I found the idea to be inspirational: modules can detect other modules in their direct neighborhood and adjust their behaviour accordingly.
 
@@ -43,11 +51,11 @@ reusable behaviours, I'm using the following application requirements:
 
 - the application stores an Application State in its Application Layer which is separate from its Presentation Layer. The Application State contains information that is needed in several places in the application (e.g. the id of the currently selected document). On the other hand, if information is local to a visual component or its direct children then I may store it in the Presentation layer.
 
-- the Presentation Layer is relatively dumb. It visualizes the Application State and responds to user actions by sending commands to the Application Layer. For example, it may send a selectItem command when it detects a mouse click. The rule that causes selected items to also be highlighted is enforced in the Application Layer. This is true in general: behaviours are enforced in the Application Layer.
+- the Presentation Layer is relatively dumb. It visualizes the Application State and responds to user actions by sending commands to the Application Layer. The effects of this action (which determines the behaviour of the application) is decided by the Application Layer.
 
 - the Application State is stored in smart Containers, such as a Documents container and a Users container. I will explain below what "smart" means, but for now imagine that a Container with selection and highlight information can automatically synchronize the two.
 
-- smart Containers contain reusable parts called Facets. You can think of Facets as the different concerns that the Container takes care of. For example, a Users Container may have a Selection Facet, a Highlight Facet and a Filtering Facet. The Selection Facet receives a list of selectable ids, and stores a list of the currently selected ones. Since the Selection Facet is only concerned with the ids, we can also use it in the Documents Container, given that we provide a mapping between Documents and ids. In general we try to use generic concepts in Facets to make them reusable.
+- smart Containers contain reusable parts called Facets. You can think of Facets as the different concerns that the Container takes care of. For example, a Users Container may have a Selection Facet, a Highlight Facet and a Filtering Facet. In general we try to use abstraction in Facets to make them reusable (a User selection and a Document selection can use the same abstraction)
 
 - Facets support operations that follow the Template Method pattern. For example, as a programmer you can customize the callbacks of the "selectItem" operation in the Selection Facet. We will see how combining different behaviours (e.g. after selecting an item in the Selection Facet, also highlight it in the Highlight Facet) is achieved via this callback mechanism.
 

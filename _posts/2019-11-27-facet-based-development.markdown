@@ -117,16 +117,13 @@ class UsersCtr {
 
 Notes:
 
-1. the `registerFacets` function ties the facet instances to the container. This makes it possible to get the container instance from
-   the facet instance using `getCtr(facet)`
+1. the `registerFacets` function ties the facet instances to the container. To get the container instance from
+   the facet instance you can use `getCtr(facet)`.
 
-2. the `setCallbacks` function installs callback functions for the "selectItem" operation of the `Selection` facet and for the
-   "highlightItem" operation of the `Highlight` facet. The implementation of the `selectItem` callback function calls the function
-   (`handleSelectItem`) that does the actual work of calculating the next selection. It also calls the `highlightFollowsSelection`
-   function to ensure that selected items are also highlighted.
+2. the `setCallbacks` function installs callback functions for the operations of the `Selection` and `Highlight` facets.
+   The `selectItem` callback function calls `handleSelectItem` to calculate the next selection. It also calls `highlightFollowsSelection` to ensure that selected items are also highlighted.
 
-3. The `highlightFollowsSelection` function updates the highlighted item. As stated, it receives the same arguments as `handleSelectItem`.
-   This time we need to look up and modify the `Highlight` facet that lives in the same container:
+3. The `highlightFollowsSelection` function updates the highlighted item. It is implemented as follows:
 
    ```
        export function highlightFollowsSelection(
@@ -139,11 +136,11 @@ Notes:
    ```
 
 4. the `_installPolicies()` function sets up additional rules inside the container. Often these rules declare data mappings that route
-   information from one facet to the other. The `mapData` function creates this mapping using MobX such that the output is updated
-   automatically when the inputs change. In the example, we see that the 'userById' member of the `Inputs` facet is mapped onto the
-   'selectableIds' member of the `Selection` facet, using the `getIds` function to convert users into ids.
+   information from one facet to the other. Since this mapping is created using MobX, the output is updated automatically when the
+   inputs change. In the example, we see that `Inputs.userById` is mapped onto `Selection.selectableIds`, using the `getIds`
+   function to convert users into ids.
 
-5. The second policy (`convertSelectedIdsToItems`) creates a data mapping from `Selection.get(this).ids` to `Selection.get(this).items`
+5. The second policy (`convertSelectedIdsToItems`) maps `Selection.get(this).ids` onto `Selection.get(this).items`
    using `Inputs.get(this).itemById` as a lookup table (where `get` is a static member function of the facet class). It is implemented as:
 
 ```
@@ -193,8 +190,7 @@ Notes:
 1. The `@observable` decorator comes from MobX. It allows clients to react automatically to changes in these members.
 
 2. The `selectItem` function is an operation that verifies the `itemId` argument and then calls the "select" callback.
-   The callbacks are installed via the `@host` decorator that comes from a library called [Aspiration]() that deals with
-   aspect oriented programming.
+   The callbacks are installed via the `@host` decorator that comes from a library called [Aspiration](https://github.com/mnieber/aspiration) that deals with aspect oriented programming.
 
 ## Discussion
 

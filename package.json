@@ -1,0 +1,12 @@
+{
+  "name": "homepage",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:mnieber/mnieber.github.io.git",
+  "author": "Maarten Nieber <hallomaarten@yahoo.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "gh-pages": "^3.0.0"
+  }
+}

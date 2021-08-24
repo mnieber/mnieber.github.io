@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Facet based development with MobX"
+title: 'Facet based development with MobX'
 date: 2019-11-27 16:21:59 +0100
 categories: react
 ---
@@ -38,7 +38,7 @@ def goToProtectedPage():
     }
 ```
 
-This looks superfically similar to OOP where member functions can be overridden, but there is an important difference that has to do with granularity. Callback functions are fine grained: they can be mixed and matches. With OOP, every time you override a class you create a new type, without the possibility to match bits and pieces of these classes at will. Moreover, adding a type increases the complexity of the application. With a Template Method you are free to use any combination of callback functions, without the need to add types.
+This looks superfically similar to OOP where member functions can be overridden, but there is an important difference that has to do with granularity. Callback functions are fine grained: they can be mixed and matched. With OOP, every time you override a class you create a new type, without the possibility to match bits and pieces of these classes at will. Moreover, adding a type increases the complexity of the application. With a Template Method you are free to use any combination of callback functions, without the need to add types.
 
 ### Smart Containers
 
@@ -61,7 +61,8 @@ reusable behaviours, I'm using the following application requirements:
 
 ## Using containers in the Application Layer
 
-Let's now make these ideas concrete by looking at some code for the Users container:
+Let's now make these ideas concrete by looking at some code for the Users container. By the way, a complete example (and accompanying
+sample application repository) can be found in the README of [SkandhaJS](https://github.com/mnieber/skandha).
 
 ```
 class UsersCtr {
@@ -71,9 +72,13 @@ class UsersCtr {
   @facet inputs: Inputs = new Inputs();
 
   constructor() {
-    registerFacets(this); //                  [1]
-    this._setCallbacks();
-    this._installPolicies();
+    registerCtr({ //                          [1]
+      ctr: this,
+      initCtr: () => {
+        this._setCallbacks();
+        this._installPolicies();
+      }
+    );
   }
 
   _setCallbacks() {
@@ -101,13 +106,13 @@ class UsersCtr {
 
   _installPolicies() { //                     [4]
     mapData(
-      [Inputs, userById],
-      [Selection, selectableIds],
+      [Selection, 'selectableIds'],
+      [Inputs, 'userById'],
       getIds
     )(this);
 
     convertSelectedIdsToItems( //             [5]
-      [Inputs, itemById]
+      [Inputs, 'itemById']
     )(this);
 
     // other policies omitted
@@ -117,7 +122,7 @@ class UsersCtr {
 
 Notes:
 
-1. the `registerFacets` function ties the facet instances to the container. To get the container instance from
+1. the `registerCtr` function ties the facet instances to the container. To get the container instance from
    the facet instance you can use `getCtr(facet)`.
 
 2. the `setCallbacks` function installs callback functions for the operations of the `Selection` and `Highlight` facets.
@@ -136,20 +141,18 @@ Notes:
    ```
 
 4. the `_installPolicies()` function sets up additional rules inside the container. Often these rules declare data mappings that route
-   information from one facet to the other. Since this mapping is created using MobX, the output is updated automatically when the
-   inputs change. In the example, we see that `Inputs.userById` is mapped onto `Selection.selectableIds`, using the `getIds`
-   function to convert users into ids.
+   information from one facet to the other. In the example, we see that `Inputs.userById` is mapped onto `Selection.selectableIds`, using the `getIds` function to convert users into ids.
 
-5. The second policy (`convertSelectedIdsToItems`) maps `Selection.get(this).ids` onto `Selection.get(this).items`
-   using `Inputs.get(this).itemById` as a lookup table (where `get` is a static member function of the facet class). It is implemented as:
+5. The second policy (`convertSelectedIdsToItems`) maps `this.selection.ids` onto `this.selection.items`
+   using `this.inputs.itemById` as a lookup table (where `get` is a static member function of the facet class). It is implemented as:
 
 ```
     mapDatas(
+      [Selection, "items"],
       [
         [Inputs, itemById],
         [Selection, "ids"],
       ],
-      [Selection, "items"],
       (itemById: any, ids: any) => lookUp(ids, itemById)
     )(this);
 ```

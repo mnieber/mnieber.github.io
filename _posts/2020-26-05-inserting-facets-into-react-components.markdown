@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Inserting facets into React components"
+title: 'Inserting facets into React components'
 date: 2020-05-26 16:21:59 +0100
 categories: react
 ---
@@ -20,9 +20,9 @@ The CtrProvider class is a helper component for creating container instances tha
 - a `createCtr` function that is invoked only once to instantiate the container
 - an `updateCtr` function sets up a MobX reaction that keeps the inputs of the container up-to-date
 - a `getDefaultProps` function that extracts default properties from this container. These default properties are provided
-  to the rest of the component tree using a NestedDefaultPropsProvider.
+  to the rest of the component tree using a `NestedDefaultPropsProvider`.
 
-CtrProvider is implemented as follows:
+`CtrProvider` is implemented as follows:
 
 ```
 import * as React from "react";
@@ -31,23 +31,24 @@ import { NestedDefaultPropsProvider } from "./NestedDefaultPropsProvider";
 const ctrByKey: { [ctrKey: string]: any } = {};
 
 type PropsT = React.PropsWithChildren<{
-  ctrKey?: string;
   createCtr: Function;
+  destroyCtr: Function;
   updateCtr: Function;
   getDefaultProps: Function;
 }>;
 
 export const CtrProvider: React.FC<PropsT> = (props: PropsT) => {
   const [ctr] = React.useState(() => {
-    const ctr = (props.ctrKey && ctrByKey[props.ctrKey]) ?? props.createCtr();
-    if (props.ctrKey) ctrByKey[props.ctrKey] = ctr;
-    return ctr;
+    return props.createCtr();
   });
 
   React.useEffect(() => {
-    if (props.updateCtr) {
-      props.updateCtr(ctr);
-    }
+    const cleanUpFunction = props.updateCtr ? props.updateCtr(ctr) : undefined;
+    const unmount = () => {
+      if (cleanUpFunction) cleanUpFunction();
+      props.destroyCtr(ctr);
+    };
+    return unmount;
   });
 
   return (
@@ -60,11 +61,7 @@ export const CtrProvider: React.FC<PropsT> = (props: PropsT) => {
 
 Notes:
 
-1.  By default, the lifetime of the container is determined by the lifetime of the `CtrProvider` component.
-    In some case though you may want to keep the container alive and reuse it the next time when the `CtrProvider` is
-    mounted again. In that case, the parent component should set the `ctrKey` of the `CtrProvider`.
-
-2.  The `CtrProvider` uses a `NestedDefaultPropsProvider` to provide the default properties to its children. This means
+1.  The `CtrProvider` uses a `NestedDefaultPropsProvider` to provide the default properties to its children. This means
     that when you nest `CtrProvider` instances, then their default properties will be merged.
 
 In the example below, CtrProvider is used to provide a TodoListCtr instance:

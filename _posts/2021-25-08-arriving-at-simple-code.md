@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "How to arrive at simple code"
+title: 'How to arrive at simple code'
 date: 2021-11-08 18:42:59 +0100
 categories: programming design
 ---
@@ -9,7 +9,7 @@ categories: programming design
 
 Programmers argue about many things, but we all agree that simple code is desirable.
 We also know that writing simple code is not so easy. In this post I will try give some tips,
-based around the idea that writing simple code is an incremental process.
+aimed at beginning programmers.
 
 ## Tips
 
@@ -23,16 +23,17 @@ based around the idea that writing simple code is an incremental process.
     bad choices. For example, if there is a shortcut that cuts off a chunk of the trajectory,
     you will be able to spot that early on.
 
-In other words: by spending an hour on thinking how to get from A to B (and by not stopping halfway!)
+This approach works because developing "on paper" is magnitudes faster than writing actual code.
+By spending an hour on thinking how to get from A to B (resisting the temptation to stop halfway)
 you've already started on the simplification process.
 
 ### Tip: focus first on getting the code to work
 
 Because simple code is easy to understand, it gives the impression that any reasonable person
 would produce that code at the first attempt. But simple code requires judicious choices, even though
-these choice look obvious in hindsight. That's why I first focus on getting the code to work.
+these choices will look obvious in hindsight. That's why I first focus on getting the code to work.
 Remember, while you are working on the code, you haven't actually solved the problem yet. If you
-simultaneously focus writing simple code, you are making your life quite hard. It's often faster to
+simultaneously focus on writing simple code, you are making your life quite hard. It's often faster to
 solve the problem with clunky code, and then simplify.
 
 ### Tip: make your data-structures work for you
@@ -48,7 +49,7 @@ solve the problem with clunky code, and then simplify.
 In general, create and use data structures that allow you to express your intentions in a natural way.
 If your data-structures are sub-optimal but not horrible to use in practice, then focus first on
 getting the code to work. However, if the introduction of better data-structures helps you to
-get the code to work, then go for it.
+get the code to work, then go for it straight away.
 
 ### Tip: be precise with terminology and naming
 
@@ -65,7 +66,7 @@ Usually, the problem illustrated in the example plays out on a more subtle level
 a function argument called 'article' that actually stores an article id. This is a problem because it obscures
 the fact that the function is not dependent on the article record. Spotting these cases allows
 us to simplify the code, because we can now use this function in other places where we only have the article id.
-Of course, by being precise about terminology, we can prevent this problem instead of having to cure it.
+We should be precise about terminology, so that we can prevent this problem instead of having to cure it.
 
 ### Tip: write less code
 
@@ -104,8 +105,19 @@ that the functions in a source file or module should ideally be working towards 
     This can be achieved by moving `sort_profiles_on_creation_date` and `find_unused_profiles` to a
     separate source file.
 
+### Tip: think both bottom-up and top-down
+
+We often write code bottom-up, getting the basic building blocks in place and then combining them to get closer
+and closer to the goal. If we get stuck, we may search for ways to simplify the constructs that we have so far
+produced. It's beneficial to also use a top-down approach, where we ask ourselves: if there already existed a library
+for my problem, then what functions and use-case examples would I ideally like to see in that library? If we are lucky,
+this might opens up new ways of solving the problem that avoid the complexity of our bottom-up solution.
+
 ## Conclusion
 
-I think it's important to keep in mind that arriving at simple code requires effort. It's only partially true that just by programming a lot, we will write ever simpler code. We also need to examine our programming habits and patterns.
-This is similar to how a pianist will only make real progress if they practice in an effective way. If they just repeat the pieces they already know without paying attention to how they play them, then they will only improve a little. Even code review is not a guarantee that we will write better and better code, because it often focuses on
-more superficial aspects. Finally, I would like to add that writing simple code is not a mechanical process. It often requires some inspiration or a new insight. And this is also what makes it so enjoyable.
+Arriving at simple code requires effort. It's only partially true that just by programming a lot, we will write ever simpler code.
+We also need to examine our programming habits and patterns. This is similar to how a pianist will only make real progress
+if they practice in an effective way. If they just repeat the pieces they already know without paying attention to how
+they play them, then they will only improve a little. Even code review is not a guarantee that we will write better and better code,
+because it often focuses on more superficial aspects. Finally, writing simple code is not a
+mechanical process: it often requires some inspiration or a new insight. And this is also what makes it enjoyable.

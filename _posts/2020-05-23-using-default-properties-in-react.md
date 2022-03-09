@@ -14,12 +14,12 @@ When passing properties in React application one usually chooses between so-call
 
 **Note**: the "default properties" approach is designed to be _compatible_ with MobX. The code is completely independent from MobX though, it only requires React.
 
-## The useDefaultProps function
+## The withDefaultProps function
 
-In the "default properties" approach a component declares two types which - by convention - are called PropsT and DefaultPropsT. The component receives a list of properties `p` and enriches this list by merging in the default properties. The result is stored as `props`:
+In the "default properties" approach a component declares two types which - by convention - are called PropsT and DefaultPropsT. The component receives a list of properties `props` that has been enriched by merging in the default properties:
 
 ```
-import { useDefaultProps, FC } from "react-default-props-context";
+import { withDefaultProps, FC } from "react-default-props-context";
 
 type PropsT = {
   name: string,
@@ -29,22 +29,20 @@ type DefaultPropsT = {
   color: string,
 }
 
-const MyComponent: FC<PropsT, DefaultPropsT> = (p: PropsT) => {
-  const props = useDefaultProps<PropsT, DefaultPropsT>(p);
+const MyComponent = withDefaultProps<PropsT, DefaultPropsT>(
+  (props: PropsT & DefaultPropsT) => {
 
   // The color value comes either from p.color or from a DefaultPropsContext.
   return <text color={props.color}>Hello</text>;
 }
 ```
 
-The `useDefaultProps` function creates a new properties object with a special lookup function. This lookup function will first try to resolve
-the property using the members of `p` (the input argument of MyComponent). If unsuccessfull it will resolve the property by looking for a
-getter function in the nearest DefaultPropsContext. If still unsuccessfull then `undefined` is returned.
+The `withDefaultProps` function is a higher order function that adds the support for default properties. It creates a new properties object (that is passed into the wrapped component) that has a special lookup function. This lookup function will first try to resolve the property using the input argument of MyComponent. If unsuccessfull it will resolve the property by looking for a getter function in the nearest DefaultPropsContext. If still unsuccessfull then `undefined` is returned.
 
 At this point, we need to clarify a few things:
 
 - how are the default property values provided?
-- why are we using a getter function and not just a value?
+- why are default properties based on getter functions and not just on values?
 - how should a property be passed in when we don't want to use the default value in the child component?
 
 To answer these questions, take a look at another example:
@@ -57,27 +55,24 @@ const MyFrame = observer(() => {
   const foo = getFoo();
 
   const defaultProps = {
-    color: () => "red", //                                            [3]
+    color: () => "red",
     bar: () => foo.bar,
   };
 
   return (
-    <DefaultPropsContext.Provider value={defaultProps}> //            [1]
-      <MyComponent name="example" color="green"/> //                  [2]
+    <DefaultPropsContext.Provider value={defaultProps}>
+      <MyComponent name="example" color="green"/>
     </DefaultPropsContext.Provider>
   )
 })
 ```
 
-We see that a DefaultPropsContext provides the dictionary of default property values. The `useDefaultProps` function that we saw
-earlier uses this context to construct a new (merged) properties object. To override the default `color` we can set this property
-explicitly on `MyComponent`. You will get the usual Typescript warnings if you are trying to set a property on `MyComponent`
-that does not exist (as a regular property or as a default property).
+The DefaultPropsContext provides the dictionary of default property values to the  `withDefaultProps` function. To override the default `color` we can set this property
+explicitly on `MyComponent`. You will get the usual Typescript warnings if you are trying to set a property that does not exist (as a regular property or as a default property).
 Now let's talk about the getter functions in the the `defaultProps` object. Since functions are more flexible than values this adds a
 bit of additional complexity and power. The real reason though for having them has to do with MobX. If we were to copy the `foo.bar`
 value directly into `defaultProps` then MobX would notice that we are referencing it. That would mean that `MyFrame` (which is the
-component that creates the `defaultProps` object) might be rendered more often than necessary. By using a getter function we avoid
-referencing `foo.bar`.
+component that creates the `defaultProps` object) might be rendered more often than necessary. By using a getter function we avoid referencing `foo.bar`.
 
 ## Using nested contexts
 
@@ -114,6 +109,10 @@ const MyFrame = observer(() => {
   )
 })
 ```
+
+## What happens when a default property is overwritten?
+
+In one of the examples above we used `color="green"` to override the default value of `color`. This has the effect of (automatically) inserting a `NestedDefaultPropsProvider` that provides the new value. This means that also children of the receiving component see the overridden value!
 
 ## Discussion
 

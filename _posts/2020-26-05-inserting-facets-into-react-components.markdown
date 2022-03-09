@@ -9,16 +9,17 @@ categories: react
 
 In a previous [blog post](https://mnieber.github.io/react/2019/11/27/facet-based-development.html) I described how
 I use Containers and Facets to structure the Application Layer for my React applications. In this post I will briefly
-describe how I connect to these Containers in the Presentation Layer. The main idea is to use a CtrProvider component to create the containers and to use the useDefaultProps hook (described [here](https://mnieber.github.io/react/typescript/2020/05/23/using-default-properties-in-react.html)) to
+describe how I connect to these Containers in the Presentation Layer. The main idea is to use a CtrProvider component to create the containers and to use the withDefaultProps higher order component (described [here](https://mnieber.github.io/react/typescript/2020/05/23/using-default-properties-in-react.html)) to
 access the Facets of these containers inside the component tree. In other words, this article brings together the
 concepts of containers, facets and default properties.
 
 ## The CtrProvider component
 
-The CtrProvider class is a helper component for creating container instances that takes three arguments:
+The CtrProvider class is a helper component for creating container instances that takes four arguments:
 
 - a `createCtr` function that is invoked only once to instantiate the container
 - an `updateCtr` function sets up a MobX reaction that keeps the inputs of the container up-to-date
+- an `destroyCtr` function that is called when the `CtrProvider` unmounts
 - a `getDefaultProps` function that extracts default properties from this container. These default properties are provided
   to the rest of the component tree using a `NestedDefaultPropsProvider`.
 
@@ -59,9 +60,7 @@ export const CtrProvider: React.FC<PropsT> = (props: PropsT) => {
 };
 ```
 
-Notes:
-
-1.  The `CtrProvider` uses a `NestedDefaultPropsProvider` to provide the default properties to its children. This means
+Note that the `CtrProvider` uses a `NestedDefaultPropsProvider` to provide the default properties to its children. This means
     that when you nest `CtrProvider` instances, then their default properties will be merged.
 
 In the example below, CtrProvider is used to provide a TodoListCtr instance:

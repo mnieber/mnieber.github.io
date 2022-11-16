@@ -101,7 +101,7 @@ The solution of pattern 2 is nice but it has a drawback since components are now
 
 This can be improved by declaring all component properties upfront, and allowing the values for these properties to come from either the parent component or from a set of default properties. In most cases, the component doesn't know or care where the values really come from. The default properties are still stored in a React context, but this is transparent to the component.
 
-Below, we see an `ArtistStateProvider` that declares two default properties, and a `ArtistBioView` that uses one of them (`artistBio`).
+Below, we see an `ArtistStateProvider` that declares two default properties, and a `ArtistBioView` that uses one of them (`artistBio`). It's important to note that all components that are nested inside the `ArtistStateProvider` can access the default properties, regardless of the level of nesting.
 
 ```
 import { NestedDefaultPropsProvider } from 'react-default-props-context';
@@ -202,12 +202,9 @@ export class SongsState {
     // Map `filtering.filteredItems` to `data.songsDisplay`.
     // Map `data.songsDisplay` to `data.selectableIds`
     mapDataToProps(
-      [[this.songs.filtering, 'inputItems'],
-      () => this.songs.data.songs],
-      [[this.songs.data, 'songsDisplay'],
-      () => this.songs.filtering.filteredItems],
-      [[this.songs.selection, 'selectableIds'],
-      () => getIds(this.songs.data.songsDisplay)]
+      [[this.songs.filtering, 'inputItems'], () => this.songs.data.songs],
+      [[this.songs.data, 'songsDisplay'], () => this.songs.filtering.filteredItems],
+      [[this.songs.selection, 'selectableIds'], () => getIds(this.songs.data.songsDisplay)]
     );
 
     // Install a `selectItem` callback that handles the selection

@@ -49,8 +49,8 @@ on getting the code to work.
     Such code will get complex very soon. Instead, you need a data-structure
     that hides the fact that not all the data is in memory (for example, by
     dynamically loading data when it's needed). With this high-level data
-    structure, you can add vectors without having to think about their size, which
-    means you can use your mental energy for more useful purposes.
+    structure, you can add vectors without having to think about their size,
+    which means you can use your mental energy for more useful purposes.
 
 In general, create and use data structures that allow you to express your intentions in a natural way.
 If your data-structures are sub-optimal but not horrible to use, then focus first on
@@ -63,12 +63,12 @@ to reason about your code and solve the problem, then go for it straight away.
 
     Let's assume we have a website that shows article prices, where some prices
     are checked with an external server, and other prices are only estimates.
-    On some parts of the website we are allowed to show price estimates, but on other
-    parts only checked prices. In this case, we should try to reflect in our terminology
-    and naming whether we are working with prices or estimates. For example, we shouldn't
-    use the term `price_service` for a service that returns price estimations. Without
-    clear terminology we will probably be so confused by our own code that simplifying
-    it will be challenging.
+    On some parts of the website we are allowed to show price estimates, but on
+    other parts only checked prices. In this case, we should try to reflect in
+    our terminology and naming whether we are working with prices or estimates.
+    For example, we shouldn't use the term `price_service` for a service that
+    returns price estimations. Without clear terminology we will probably be so
+    confused by our own code that simplifying it will be challenging.
 
 Usually, the problem illustrated in the example plays out on a more subtle level. For example, we might use
 a function argument called 'article' that actually holds the article id. This is a problem because it obscures
@@ -106,13 +106,14 @@ that the functions in a source file or module should ideally be working towards 
 
 .. example:
 
-    We might have a source file that contains a `UserProfile` class, a `find_unused_profiles`
-    function and a `sort_profiles_on_creation_date` function. Let's assume that
-    `sort_profiles_on_creation_date` takes care of an implementation detail of
-    `find_unused_profiles`. In this case, you don't want the reader to think that
-    `sort_profiles_on_creation_date` and `UserProfile` are directly related.
-    This can be achieved by moving `sort_profiles_on_creation_date` and `find_unused_profiles`
-    to a separate source file.
+    We might have a source file that contains a `UserProfile` class, a
+    `find_unused_profiles` function and a `sort_profiles_on_creation_date`
+    function. Let's assume that `sort_profiles_on_creation_date` takes care
+    of an implementation detail of `find_unused_profiles`. In this case, you
+    don't want the reader to think that `sort_profiles_on_creation_date`
+    and `UserProfile` are directly related. This can be achieved by moving
+    `sort_profiles_on_creation_date` and `find_unused_profiles` to a separate
+    source file.
 
 There is no hard rule to tell you much code can live in a single file, but in general I strive for
 an "experience of cohesiveness" for every source file in a project. Sometimes a function that is in
@@ -131,11 +132,12 @@ this might opens up new ways of solving the problem that avoid the complexity of
 
 .. example:
 
-    In Javascript, we could create a library that can produce HTML elements. This library
-    would have functions such as `createDiv` and `createButton`. We can then combine these
-    functions to create more complex elements. This is a bottom up approach. If we switch
-    to a top-down approach then we can ask ourselves: in a perfect world, how would I create
-    HTML in Javascript. The answer would be the one that is given to us by React: we would
+    In Javascript, we could create a library that can produce HTML elements.
+    This library would have functions such as `createDiv` and `createButton`.
+    We can then combine these functions to create more complex elements. This
+    is a bottom up approach. If we switch to a top-down approach then we can
+    ask ourselves: in a perfect world, how would I create HTML in Javascript.
+    The answer would be the one that is given to us by React: we would
     simply write HTML inside Javascript, as if HTML was valid Javascript syntax!
     This solution has dramatic benefits.
 

@@ -12,7 +12,7 @@ As I explain the patterns, I will go from local to global. I will start with a p
 
 ## Pattern 1: use high-level state objects in dumb React components
 
-React components are functions that create the (shadow) DOM elements that are rendered in the browser. This task usually involves taking care of a lot of small details, such as setting margins, dealing with responsiveness, setting click handlers etc. This code tends to be relatively straightforward, but with a lot going on. If you mix this code with less-than-trivial state management code, then the result is usually not nicely readable. Therefore, I try to make each component agnostic of low level details related to state management.
+React components are functions that create the (shadow) DOM elements that are rendered in the browser. This task usually involves taking care of a lot of small details, such as setting margins, dealing with responsiveness, setting click handlers etc. This code tends to be relatively straightforward, but there are usually a lot of small details to take care of. If you mix this code with non-trivial state management code, then the result is usually not nicely readable. Therefore, I try to make each component agnostic of low level details related to state management.
 
 One way to achieve this is to create high-level custom hooks that wrap around React's useState hook (or any other hooks). For example, imagine a delete button that requires the user to confirm a delete operation by typing a special word. This button could use the following state:
 

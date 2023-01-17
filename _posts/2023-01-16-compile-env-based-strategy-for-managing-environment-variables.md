@@ -45,8 +45,8 @@ Note that having multiple environments is not at odds with deploying the same ar
 
 ## Security in each environment
 
-The dev and deploy environments should have no sensitive data at all. They have some security, because we wouldn't want a hacker to gain access and see the source code. However, if a hacker obtained access, they wouldn't be able to get any useful secrets.
-Although the deploy environment doesn't have sensitive data, it will reflect some of the security measures of the prod environment. This is become the deploy environment needs to be closer to the prod environment (since it must make a convincing case that the system can be deployed). Finally, the prod environment obviously contains sensitive data that must be protected.
+The dev and deploy environments should have no sensitive data at all. They require some security, because we wouldn't want a hacker to gain access and see the source code. However, if a hacker obtained access, then they wouldn't be able to get any useful secrets.
+Although the deploy environment doesn't have sensitive data, it will reflect some of the security measures of the prod environment. This is because the deploy environment needs to be relatively close to the prod environment (since it must make a convincing case that the system can be deployed). Finally, the prod environment obviously contains sensitive data that must be protected.
 
 ## Injecting variables into the deploy environment
 
@@ -81,15 +81,9 @@ that the variables in `deploy.injected.env` are injected into the container, and
 DJANGO_DATABASE_PASSWORD=variety-native-enter-boat-loss
 ```
 
-Since this file may contain secrets, it cannot be committed to git. Remember that the deploy environment is a show-case for what
-the prod environment could look like. Therefore, just as in prod, secrets cannot be committed to git. In prod, you wouldn't
-have secrets in a file either, but in the deploy environment we allow this so that we can use this file in docker-compose. This
-won't pose any problems to a dev-ops person, they will simply configure these variables dynamically.
-
 ## Reading variables from a file in the deploy environment
 
-We've just seen the dynamic use-case, where variables are injected (via the docker-compose file). My static use-case - where variables are read from a file -
-looks like this:
+We've just seen the dynamic use-case, where variables are injected into the container by docker-compose. My static use-case - where variables are read from a file - looks like this:
 
 ```bash
 # backend/.env/deploy.env
@@ -99,11 +93,10 @@ looks like this:
 # secrets: not allowed
 # git    : yes
 
-DJANGO_SETTINGS_MODULE?=app.settings.deploy
+DJANGO_SETTINGS_MODULE=app.settings.deploy
 ```
 
-In the static use-case, the .env file is just another configuration file. It cannot be tweaked like the injected variables can, but it offers a central place where some of the key parameters of the system are determined. The fact that some variables are read from a file,
-rather than being injected makes life easier for dev-ops people. Of course, the downside is that these variables cannot be tuned later (they are baked into the artifact). Note that the `backend/.env/deploy.env` file documents that fact that this file may not
+In the static use-case, the .env file is just another configuration file. It cannot be tweaked like the injected variables can, but it offers a central place where some of the key parameters of the system are determined. In some cases, the fact that variables are read from a file (rather than being injected) makes life easier for dev-ops people, as long as there is never any need to tune these variables later. Note that the `backend/.env/deploy.env` file documents that fact that this file may not
 contain secrets and therefore can be added to git.
 
 ## Compiling .env files using compile-env
@@ -113,7 +106,7 @@ You've probably noticed that the .env files above state that they are generated 
 - the same values may appear in multiple .env files. Ideally though, we'd define these values just once.
 - the .env file for a service will usually contain a mixture of variables that are related to different concerns
   (e.g. postgres, django, aws). To keep things organized, it helps to group all values related to a concern
-  in a single file (e.g. postgres.env, django.env, aws.env), and to distribute these values to the .env files that need them.
+  in a single file (e.g. `postgres.env`, `django.env`, `aws.env`), and to distribute these values to the .env files that need them.
 - .env files are easier to grok if they have concrete values, rather than expressions. For example, for understand the system
   it's better to see `SERVICE_VERSION=backend-2.1` in a .env file rather than `SERVICE_VERSION=${SERVICE_NAME}-${VERSION}`.
   A compilation step can take care of this type of value interpolation.

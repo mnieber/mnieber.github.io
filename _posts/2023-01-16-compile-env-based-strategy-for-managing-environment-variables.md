@@ -1,7 +1,9 @@
 # A compile-env based strategy for managing environment variables
 
 In this post I will describe how I deal with environment variables, and with environments in general.
-The characteristics of my approach are:
+My approach is based on the `compile-env` tool, which can be be installed with `pip install compile-env`.
+
+The characteristics of this approach are:
 
 - It's DRY: values are sourced from one location rather than repeated in different files
 - It's modular: values are grouped by theme
@@ -11,20 +13,20 @@ The characteristics of my approach are:
 Before we dive into these characteristics, I would like to first address how I see the roles of the
 dev, prod and - what I call - deploy environment.
 
-## The role of the dev, prod and deploy environments.
+## The role of the dev, prod and deploy environments
 
 The role of the dev environment is to help the developer to create deployable code in an efficient
 and pleasant manner. This means that workflows for starting, stopping and debugging services are fast and uncomplicated,
-and the system is easy to reason about so that the diagnosis of problems is made as easy as possible. The dev environment
-usually contains various debugging, testing and formatting tools that help the developer.
+and that the system is easy to reason about so that the diagnosis of problems is made as easy as possible. For this purpose,
+the dev environment usually contains various debugging, testing and formatting tools.
 
 The role of the prod environment is to execute the system in a safe, efficient and scaleable manner. Usually, developers
-don't deal with this environment, only dev-ops people do.
+don't deal with this environment, but dev-ops people do.
 
-The role of the deploy environment to "make a convincing case" that it's possible to deploy the code to production.
-Ideally, when a dev-ops person looks at the deploy environment (and reads its documentation). then they can imagine how this
-could be deployed to production, and they won't see any major obstacles. For example, the deploy environment should demonstate
-that all required product features can be executed without having any debugging tools installed. And if the dev environment
+The role of the deploy environment to make a convincing case that it's possible to deploy the code to production.
+Ideally, when a dev-ops person looks at the deploy environment (and reads its documentation) then they can imagine how this
+could be deployed to production, and they shouldn't see any major obstacles. For example, the deploy environment should demonstate
+that all required product features can be executed without having any debugging tools installed. In case that the dev environment
 runs a development server, then this could be replaced by a minimally configured production server in the deploy environment.
 The dev-ops person can then imagine how this minimal configuration could be extended to suit the production requirements.
 
@@ -39,12 +41,12 @@ Now, I'm not arguing that the developer should remain completely unaware of dev-
 particular reasons to reflect a production concern in the dev environment. For example, in particular systems,
 not including a load balancer in the dev environment may lead to a code base that does not lend itself well for load-balancing. However, since including it adds an extra burden on the developers, it should be conscious decision that is backed by analysis and arguments, not a reflex.
 
-Note that it's still a good idea to deploy the same artifacts everywhere, without modification. Such a system can be tuned via the environment variables, that you can think of as the API of the system configuration. However, having a single deployable system doesn't mean having a single environment. There is still a dev environment - that is never deployed, and a prod environment - that developers don't usually work in.
+Note that having multiple environments is not at odds with deploying the same artifacts everywhere, and using the environment variables to tune it. These "one and only" artifacts are based on the prod environment, whereas the source code (on which prod is based) is developed inside the dev environment. There is no contradiction there.
 
 ## Security in each environment
 
 The dev and deploy environments should have no sensitive data at all. They have some security, because we wouldn't want a hacker to gain access and see the source code. However, if a hacker obtained access, they wouldn't be able to get any useful secrets.
-Although the deploy environment doesn't have sensitive data, it will reflect some of the security measures of the prod environment. This is become the deploy environment needs to be closer to the prod environment (since it must "make a convincing case" that the system can be deployed). Finally, the prod environment obviously contains sensitive data that must be protected.
+Although the deploy environment doesn't have sensitive data, it will reflect some of the security measures of the prod environment. This is become the deploy environment needs to be closer to the prod environment (since it must make a convincing case that the system can be deployed). Finally, the prod environment obviously contains sensitive data that must be protected.
 
 ## Injecting variables into the deploy environment
 

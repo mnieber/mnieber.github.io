@@ -24,11 +24,12 @@ The role of the prod environment is to execute the system in a safe, efficient a
 don't deal with this environment, but dev-ops people do.
 
 The role of the deploy environment to make a convincing case that it's possible to deploy the code to production.
-Ideally, when a dev-ops person looks at the deploy environment (and reads its documentation) then they can imagine how this
-could be deployed to production, and they shouldn't see any major obstacles. For example, the deploy environment should demonstate
-that all required product features can be executed without having any debugging tools installed. In case that the dev environment
-runs a development server, then this could be replaced by a minimally configured production server in the deploy environment.
-The dev-ops person can then imagine how this minimal configuration could be extended to suit the production requirements.
+Ideally, when a dev-ops person looks at the deploy environment (and reads its documentation) then they will be able to imagine
+how this could be deployed to production. Compare this to the situation where the dev-ops engineer has to start from the
+dev environment: that's far less ideal, because it burdens them with the task of first cleaning this environment from all its
+dev tooling. As another example, it will typically be the case that the dev environment runs a development server, which is replaced
+in the deploy environment by a minimally configured production server. This makes it easy for the dev-ops person to envision how
+this minimal configuration could be extended to suit the production requirements.
 
 ## The relation between the different environments
 
@@ -107,8 +108,8 @@ You've probably noticed that the .env files above state that they are generated 
 - the .env file for a service will usually contain a mixture of variables that are related to different concerns
   (e.g. postgres, django, aws). To keep things organized, it helps to group all values related to a concern
   in a single file (e.g. `postgres.env`, `django.env`, `aws.env`), and to distribute these values to the .env files that need them.
-- .env files are easier to grok if they have concrete values, rather than expressions. For example, for understand the system
-  it's better to see `SERVICE_VERSION=backend-2.1` in a .env file rather than `SERVICE_VERSION=${SERVICE_NAME}-${VERSION}`.
+- .env files are easier to grok if they have concrete values, rather than expressions. For example, for understanding the system
+  it's more useful to see `SERVICE_VERSION=backend-2.1` in a .env file rather than `SERVICE_VERSION=${SERVICE_NAME}-${VERSION}`.
   A compilation step can take care of this type of value interpolation.
 
 The config file for compile-env looks like this:

@@ -1,3 +1,10 @@
+---
+layout: post
+title: 'A compile-env based strategy for managing environment variables'
+date: 2023-01-16 16:21:59 +0100
+categories: dev-ops
+---
+
 # A compile-env based strategy for managing environment variables
 
 In this post I will describe how I deal with environment variables, and with environments in general.

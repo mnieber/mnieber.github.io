@@ -4,7 +4,8 @@ To start with a quote from alexei.me: "State Management in Frontend is complicat
 
 ## On server state and UI state
 
-I will be talking about server state and UI state. The former is the application information that is stored in the database. Server state management deals with querying the server, caching this information for using it in the various UI components, and sending mutation requests back to the server. We will also need logic for managing the UI state. This includes the contents of forms, selections, toggles that show and hide components, etc.
+I will be talking about server state and UI state. The former is the application information that is stored in the database. Server state management deals with querying the server, caching this information for using it in the various UI components, and sending mutation requests back to the server.
+We will also need logic for managing the UI state. This includes the contents of forms, selections, toggles that show and hide components, etc.
 
 ## Outline
 
@@ -39,7 +40,7 @@ export const useLockedDeleteFlag = (unlockWord: string) => {
 
 ## Pattern 2: data fetching is triggered by the url
 
-When a component must render some data, then it should either receive that data from a parent component (or React context) or fetch it from the server. I avoid the latter option because when different components request the same data then it can lead to overfetching. It can also lead to data inconsistencies between components that query the server at different times. Finally, giving a component the responsibility to fetch data that can clutter the code of that component.
+When a component must render some data, then it should either receive that data from a parent component (or React context) or fetch it from the server. I avoid the latter option because when different components request the same data then it can lead to overfetching. It can also lead to data inconsistencies between components that query the server at different times. Finally, giving a component the responsibility to fetch data can clutter the code of that component.
 
 In my approach, data fetching is triggered by the url. I look at the UrlRouter component to identify the group of components that need a particular dataset and wrap them in (what I call) a state-provider component. This state-provider fetches data from the server and stores it in a state object that is made available as a React context. Actually, I use a special kind of React context, but more about that later.
 
@@ -101,7 +102,7 @@ The solution of pattern 2 is nice but it has a drawback since components are now
 
 This can be improved by declaring all component properties upfront, and allowing the values for these properties to come from either the parent component or from a set of default properties. In most cases, the component doesn't know or care where the values really come from. The default properties are still stored in a React context, but this is transparent to the component.
 
-Below, we see an `ArtistStateProvider` that declares two default properties, and a `ArtistBioView` that uses one of them (`artistBio`). It's important to note that all components that are nested inside the `ArtistStateProvider` can access the default properties, regardless of the level of nesting.
+Below, we see an `ArtistStateProvider` that declares two default properties: `artistBio` and `recordLabel`. The `ArtistBioView` component uses one of them (`artistBio`). It's important to note that all components that are nested inside the `ArtistStateProvider` can access the default properties, regardless of the level of nesting.
 
 ```
 import { NestedDefaultPropsProvider } from 'react-default-props-context';

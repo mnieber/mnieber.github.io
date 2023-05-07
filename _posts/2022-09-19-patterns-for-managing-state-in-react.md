@@ -4,12 +4,11 @@ To start with a quote from alexei.me: "State Management in Frontend is complicat
 
 ## On server state and UI state
 
-I will be talking about server state and UI state. The former is the application information that is stored in the database. Server state management deals with querying the server, caching this information for using it in the various UI components, and sending mutation requests back to the server.
-We will also need logic for managing the UI state. This includes the contents of forms, selections, toggles that show and hide components, etc.
+I will be talking about server state and UI state. The former is the application information that is stored in the database. Server state management deals with querying the server, caching this information for using it in the various UI components, and sending mutation requests back to the server. The counterpart to server state is UI state, which includes the contents of forms, selections, toggles that show and hide components, etc.
 
 ## Outline
 
-As I explain the patterns, I will go from local to global. I will start with a pattern for capturing local state. Next, I will discuss how local state is filled with server data. Then, I will address how state can be shared among components. Finally, I will share some thoughts on adding behaviors to the UI state (with the aim of keeping the rendering components simple).
+As I explain the patterns, I will go from local to global. I will start with a pattern for capturing local state. Next, I will discuss how local state is filled with server data. Then, I will address how state can be shared among components. Finally, I will share some thoughts on adding behaviors to the UI state. The underlying theme in all these patterns is to create fat state objects, and thin rendering components.
 
 ## Pattern 1: use high-level state objects in dumb React components
 

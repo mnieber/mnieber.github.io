@@ -9,15 +9,25 @@ categories: programming css scss react
 
 Note that this post is still in draft. I would like to collect feedback so that I can improve it.
 
-## The trade-off problem: consistency versus flexibility
+## Introduction: the problem with component libraries
 
-In this post, we'll take a look at a particular problem that developers face when creating a UI, which I will call the trade-off problem. The trade-off problem occurs when you try to create an application that looks both consistent and beautiful. To make the application look consistent, it helps to capture commonly used styles and layouts in building blocks that can be reused throughout the application. However, these building blocks introduce rigidity that makes it harder to adjust each UI element to its local context. Therefore, we see that there is a trade-off between consistency. reusability and DRY code on the one hand, and flexibility, beauty and isolated code on the other.
+Many developers opt for component libraries like MaterialUI as a foundation for their applications. Such libraries enable rapid user interface development while ensuring a consistent appearance. However, this convenience comes at the cost of limited customization options for the components. Consequently, the benefits of component libraries present a trade-off: either relinquish control over the customization of specific elements or resort to unconventional and hacky code to circumvent library constraints. Choosing limited customization hampers the potential of your UI, while settling for hacky code compromises code quality. This, in turn, indirectly affects the UI quality, as maintaining and extending the code becomes more challenging.
 
-There is no real solution to the trade-off problem, but there are different approaches that each have their own strengths and weaknesses. These are very well explained in a video by Theo from T3 (https://www.youtube.com/watch?v=CQuTF-bkOgc), in which he advises to create UI elements using inline styles. I recommend to check out this video first, since I'm building on this advice. In the remainder of this post I will explain how inline styles address the trade-off problem, and how inline styles are used in my own approach for managing styles. I will discuss this in the context of React, since that's the framework I use to build UI's. However, the ideas presented here are not specific to React, they can be applied to other frameworks too.
+## Outline of this post
 
-## Addressing the trade-off problem with inline styles
+The problems with component libraries are explained in an excellent video by Theo from T3 (https://www.youtube.com/watch?v=CQuTF-bkOgc). Before proceeding, I highly recommend watching this video, as I'll be building on his advice to employ inline styles and create a custom component library for your application.
 
-To understand the strengths and weaknesses of inline styles, it's insightful to take a look at the approach that is offered by TailwindUI. In TailwindUI, every component is a code snippet that contains HTML elements with inline styles. To use a component, you simply copy the snippet to your source file and adjust it as needed. This means that your source code may contain multiple copies of the snippet. Here is an example of a snippet for an email form field:
+In the rest of this post, I will:
+
+- Examine the benefits and limitations of inline styles;
+- Explain why using inline styles doesn't conflict with creating a custom component library;
+- Introduce my own strategy for managing styles.
+
+I'll be discussing these topics within the context of React, as it is my preferred framework for building UIs. However, the concepts presented here are not exclusive to React and can be adapted for other frameworks as well.
+
+## The benefits and drawbacks of inline styles
+
+To understand the advantages and disadvantages of inline styles, it's helpful to examine the approach employed by TailwindUI. In TailwindUI, each component consists of an HTML code snippet with inline styles. To utilize a component, simply copy the snippet to your source file and modify it as required. This could result in multiple instances of the snippet in your source code. Here's an example of a snippet for an email form field:
 
 ```html
 <div class="mb-6">
@@ -37,24 +47,32 @@ To understand the strengths and weaknesses of inline styles, it's insightful to 
 </div>
 ```
 
-This approach is very flexible, because every component instance can be adjusted so that it looks good in its particular context. Some other advantages are:
+This method offers significant flexibility, as every component instance can be tailored to suit its specific context. Some additional benefits include:
 
-- you won't have to search for the styles of an element, since they are right there in the HTML code;
-- there is no need to come up with good CSS class names;
-- when you adjust the instance, there is no risk of breaking the look of other component instances.
+- Ease of locating an element's styles, as they are directly embedded in the HTML code;
+- No need to devise suitable CSS class names;
+- When you adjust the instance, there is no risk of breaking the appearance of other component instances.
 
-Note that the use of inline styles doesn't prevent you from extracting commonly used styles or HTML structures into reusable building blocks. Whenever we do this, we trade of some of the flexibility to have more consistency and reuse. We'll come back to this approach later in this post.
+Now, let's examine the impact of using inline styles on consistency. While copying from an HTML snippet does not enforce consistency, it encourages it since all form fields originate from the same template. However, maintaining consistency while altering inline styles requires discipline from the developer. Some other drawbacks include:
 
-Let's also consider the effect of using inline styles on consistency. Even though copying from a HTML snippet doesn't enforce consistency, it still promotes it, because by using the same snippet for all your form fields you will create a consistent look. The drawback is that you need to be disciplined as a developer to maintain this consistency as you make changes to the inline styles. Some other drawbacks are:
+- When updating a component's appearance throughout the application, you may need to modify inline styles in multiple locations.
+- Inline styles can appear cluttered and may not convey an intended purpose to the code reader.
 
-- when you want to change the look of a component everywhere in the application, then you need to update the inline styles in potentially many places.
-- inline styles tend to look noisy, and they don't communicate an intent to the reader of the code.
+Personally, I appreciate being able to examine a piece of code and confirm its correctness. This becomes challenging when faced with an extensive list of inline styles. Although a misplaced or missing style isn't catastrophic and noticeable UI issues will eventually be discovered, this situation can be psychologically stressful.
 
-Personally, I like being able to look at a piece of code, and confirm for myself that it looks correct. This is hard to do when you are looking at a big list of inline styles. Of course you could argue that a wrong or missing style is not the end of the world, and that if the result looks really wrong then you will notice this sooner or later, but psychologically, I find it creates some stress.
+## Why inline styles and a custom component library are compatible
+
+Utilizing inline styles doesn't restrict you from extracting frequently used styles or HTML structures into reusable components. When doing so, you trade some flexibility for increased consistency and reusability. However, it may seem counterintuitive to recommend against generic component libraries while building your own. The reason why this is not contradictory is that a custom component library is specifically tailored to your application's needs.
+
+Unlike a generic component library, a custom one will inherently align with your application's appearance. Additionally, accommodating special cases becomes much simpler since you have full control over the code. For instance, if extracting a particular component proves difficult, you can choose to maintain it as a snippet. This flexibility in a custom component library allows you to strike the right balance between reusability and adaptability, ensuring a consistent and effective UI.
+
+## My styling system
+
+I will now explain how I base my own styling system on both inline styles, React components and SCSS.
 
 ## Breaking out intrinsic styles
 
-We've seen above that inline styles are copied from a snippet and adjusted to fit the local context. However, there is usually a subset of styles that are never changed. I call these the intrinsic styles of the component. In my opinion, it's better to move these styles to a CSS class, so that the code becomes less noisy. Let's look at an example where this is applied. In this example, the code snippet has been copied to a typescript function, and the intrinsic styles have been moved to a SCSS file.
+As discussed earlier, inline styles are typically copied from a snippet and adjusted to suit the local context. However, there is often a subset of styles that remain unchanged. These can be referred to as the component's intrinsic styles. In my view, it's preferable to move these styles to a CSS class, reducing code clutter. Let's examine an example where this principle is applied. In this instance, the email-field code snippet has been transferred to a TypeScript function, and the intrinsic styles have been relocated to an SCSS file.
 
 ```tsx
 export const SignInForm = () => {
@@ -95,13 +113,13 @@ export const SignInForm = () => {
 }
 ```
 
-It's important to note that there are no strict rules for picking the properties that are intrinsic. For example, if not all labels in a form should have the same text color then the `text-gray-900` style should remain inline. In most cases, the reader can intuit why certain styles are inline and others are not. In less intuitive cases, for example when a margin appears in the CSS file, it's good to add a comment to explain why the style is considered to be intrinsic.
+It's important to recognize that there are no rigid guidelines for determining which properties are intrinsic. For instance, if not all form labels share the same text color then the text-gray-900 style should remain inline. In most cases, the reader can intuitively discern why certain styles are inline while others are not. In less obvious situations, such as when a margin appears in the CSS file, it's helpful to include a comment explaining why the style is considered to be intrinsic.
 
 ## Ad-hoc properties and layouts
 
-I use the term ad-hoc properties for those properties that remain inline. Usually, the ad-hoc properties deal with the layout and geometry of the component, such as the flex-box properties, margins, heights, widths and paddings.
+I refer to the properties that remain inline as ad-hoc properties. These typically involve the component's layout and geometry, including flex-box properties, margins, heights, widths, and paddings.
 
-Although ad-hoc properties can be adjusted to suit a particular context, it's still good for consistency to limit the variation in these properties. For example, if the email field has a vertical padding of 1.5, then probably the password field in the same form should also have this padding. Therefore, I also break out the ad-hoc properties and put them in a layout object.
+While ad-hoc properties can be adjusted to fit a specific context, it's good for consistency to limit the variation in these properties. For instance, if an email field has a vertical padding of 1.5, it's likely that the password field in the same form should also have this padding. To address this, I extract the ad-hoc properties and place them in a layout object.
 
 ```tsx
 import { classnames as cn } from 'classnames';
@@ -146,7 +164,7 @@ export const L = {
 };
 ```
 
-As can be seen from the comments, it's not mandatory to use all the keys in the layout object. For example, the `label` key is only used if the form-field has a label. It's also possible to include variations on the layout, as follows:
+As indicated by the comments, it's not mandatory to use all the keys in the layout object. For example, the `label` key is only utilized if the form-field includes a label. It's also possible to incorporate variations in the layout, as demonstrated below:
 
 ```tsx
 import { classnames as cn } from 'classnames';
@@ -202,14 +220,16 @@ export const L = {
 };
 ```
 
-I usually add a lot of comments to the layout object, to make it clear how each layout is intended to be used. Since the use of a layout object limits the variation
-in the ad-hoc styles, it's a step in the direction of greater consistency. However, it doesn't guarantee a consistent look, since a developer might pick the wrong
-values from the layout. This is just another manifestation of the trade-off problem, which does not have a perfect solution.
+I typically include numerous comments in the layout object to clarify the intended use of each layout. Keep in mind that a developer might choose the wrong values from the layout, resulting in an inconsistent appearance. However, since the use of a layout object constrains the variation in ad-hoc styles, it still promotes greater consistency.
 
 ## Breaking out components
 
-If we know that email fields should have the same HTML structure everywhere in the application, then we can extract the HTML structure into an `EmailField` component function. This reduces our ability to make local changes, because when the component function is changed then the email field will be updated everywhere in the application. However, the fact that we are using CSS classes for intrinsic styles helps to mitigate this loss of flexibility. For example, we can target `FormField__Input` elements that appear on an `AuthPage`, and make them look different from `FormField__Input` elements on the `UserProfilePage`. We have to keep an eye on complexity though. When it becomes complicated to get the right look and behavior for a component in a particular context, then it's probably better to use dedicated component functions. For example, we could create a `AuthEmailField` component that uses a `AuthEmailField__Input` CSS class, and a `UserProfileEmailField` component that uses a `UserProfileEmailField__Input`. If `AuthEmailField` and `UserProfileEmailField` have duplicated logic, then this logic can be moved into reusable hooks.
+If we know that email fields should have the same HTML structure throughout the application, then we can extract this structure into an `EmailField` component function. This approach reduces our ability to make local adjustments, as changes to the component function will affect email fields across the entire application. However, utilizing CSS classes for intrinsic styles helps alleviate this loss of flexibility. For instance, we can target `FormField__Input` elements on an `AuthPage` and differentiate them from `FormField__Input` elements on the `UserProfilePage`.
+
+Nonetheless, it's crucial to keep an eye on complexity. If achieving the desired appearance and behavior for a component in a specific context becomes challenging, then it might be more suitable to use dedicated component functions. For example, we could create an `AuthEmailField` component that uses an `AuthEmailField__Input` CSS class and a `UserProfileEmailField` component that uses a `UserProfileEmailField__Input` class. If `AuthEmailField` and `UserProfileEmailField` share duplicated logic, then this logic can be moved into reusable hooks.
 
 ## A repeating challenge
 
-It becomes clear now that we have to solve the trade-off problem many times, in many different contexts. We must decide whether to extract certain HTML elements into components, or leave them inline. Also, we have to decide whether we want a single component (e.g. `EmailFormField`) that can be used in multiple contexts, or if we should use a different component function in each context (e.g. `AuthEmailField` and `UserProfileEmailField`). This seems like a headache, but there is also good news: since we are not locked into a particular approach, we can choose the best solution for each context. We can start out by inlining our styles, which gives us a lot of freedom and control. Then, in particular cases, we can decide to extract certain parts into CSS classes, layouts and components. If we're not happy then we can revert those changes. In my opinion, this is better than using a component library such as Material UI, where all UI elements are boxed in by default, and where we might be forced to break into these boxes if we want more flexibility.
+It should be clear now that the trade-off between consistency, code reuse and flexibility must be addressed in numerous contexts. We need to decide whether to extract specific HTML elements into components or leave them inline. Additionally, we must determine whether to use a single component (e.g., EmailFormField) applicable in multiple contexts or implement a different component function for each context (e.g., AuthEmailField and UserProfileEmailField). While this may seem daunting, there is a silver lining: since we aren't confined to a particular approach, we can select the most suitable solution for each context.
+
+Initially, we can opt for inlining our styles, providing greater freedom and control. In specific cases, we may choose to extract certain aspects into CSS classes, layouts, and components. If we find the results unsatisfactory, we can always revert those changes. In my opinion, this approach is more favorable than utilizing a component library like Material UI, where all UI elements are restricted by default, and we might need to circumvent these constraints to achieve more flexibility.

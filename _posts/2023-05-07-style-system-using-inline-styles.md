@@ -11,7 +11,7 @@ Note that this post is still in draft. I would like to collect feedback so that 
 
 ## Introduction: the problem with component libraries
 
-Many developers opt for component libraries like MaterialUI as a foundation for their applications. Such libraries enable rapid user interface development while ensuring a consistent appearance. However, this convenience comes at the cost of limited customization options for the components. Consequently, the benefits of component libraries present a trade-off: either relinquish control over the customization of specific elements or resort to unconventional and hacky code to circumvent library constraints. Choosing limited customization hampers the potential of your UI, while settling for hacky code compromises code quality. This, in turn, indirectly affects the UI quality, as maintaining and extending the code becomes more challenging.
+Many developers opt for component libraries like MaterialUI as a foundation for their applications. Such libraries enable rapid user interface development while ensuring a consistent appearance. However, customizing the components in ways that were not foreseen by the library can be challenging, and degrade code quality. Consequently, the benefits of component libraries present a trade-off: either relinquish control over the customization of specific elements or resort to hacky code to circumvent library constraints. Choosing limited customization hampers the potential of your UI, but the same is true when you compromise code quality, since this limits your ability to build the best possible UI.
 
 ## Outline of this post
 

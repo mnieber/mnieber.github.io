@@ -25,8 +25,8 @@ aimed at beginning programmers.
     clever trick). You often spot these opportunities by thinking before doing.
 
 This approach works because developing "on paper" is magnitudes faster than writing actual code.
-By spending an hour on thinking how to get from A to B (resisting the temptation to stop halfway)
-you've already started on the simplification process.
+By spending an hour on thinking how to get from A to B (resisting the temptation to stop halfway
+and start coding) you've already started on the simplification process.
 
 ### Tip: focus first on getting the code to work
 
@@ -152,4 +152,6 @@ Arriving at simple code requires effort. It's only partially true that just by p
 We also need to examine our programming habits and patterns. This is similar to how a pianist will only make real progress
 if they practice in an effective way. If they just repeat the pieces they already know without paying attention to how
 they play them, then they will only improve a little. Even code review is not a guarantee that we will write better and better code,
-because it often focuses on more superficial aspects, without challenging the more deeply ingrained habits and preferences. Finally, writing simple code is not a mechanical process: it often requires some inspiration or a new insight. And fortunately this is also what makes it enjoyable.
+because it often focuses on more superficial aspects, without challenging the more deeply ingrained habits and preferences.
+Finally, writing simple code is not a mechanical process: it often requires some inspiration or a new insight.
+And fortunately this is also what makes it enjoyable.

@@ -128,7 +128,7 @@ outputs:
     targets: [../../backend/.env/deploy.injected.env.in]
     dependencies: [secrets.env]
   ../../backend/.env/deploy.env:
-    targets: [../../backend/.env/deploy.injected.env.in]
+    targets: [../../backend/.env/deploy.env.in]
   ../../postgres/.env/deploy.injected.env:
     targets: ../../postgres/.env/deploy.injected.env.in]
 ```

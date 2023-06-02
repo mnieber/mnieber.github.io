@@ -19,22 +19,22 @@ When passing properties in React application one usually chooses between so-call
 In the "default properties" approach a component declares two types which - by convention - are called PropsT and DefaultPropsT. The component receives a list of properties `props` that has been enriched by merging in the default properties:
 
 ```
-import { withDefaultProps, FC } from "react-default-props-context";
+import { withDefaultProps, stub } from "react-default-props-context";
 
 type PropsT = {
   name: string,
 };
 
-type DefaultPropsT = {
-  color: string,
+const DefaultProps = {
+  color: stub as string,
 }
 
-const MyComponent = withDefaultProps<PropsT, DefaultPropsT>(
+const MyComponent = withDefaultProps<PropsT, typeof DefaultProps>(
   (props: PropsT & DefaultPropsT) => {
-
-  // The color value comes either from p.color or from a DefaultPropsContext.
-  return <text color={props.color}>Hello</text>;
-}
+    // The color value comes either from props.color or from a DefaultPropsContext.
+    return <text color={props.color}>Hello</text>;
+  }, DefaultProps
+);
 ```
 
 The `withDefaultProps` function is a higher order function that adds the support for default properties. It creates a new properties object (that is passed into the wrapped component) that has a special lookup function. This lookup function will first try to resolve the property using the input argument of MyComponent. If unsuccessfull it will resolve the property by looking for a getter function in the nearest DefaultPropsContext. If still unsuccessfull then `undefined` is returned.
@@ -67,7 +67,7 @@ const MyFrame = observer(() => {
 })
 ```
 
-The DefaultPropsContext provides the dictionary of default property values to the  `withDefaultProps` function. To override the default `color` we can set this property
+The DefaultPropsContext provides the dictionary of default property values to the `withDefaultProps` function. To override the default `color` we can set this property
 explicitly on `MyComponent`. You will get the usual Typescript warnings if you are trying to set a property that does not exist (as a regular property or as a default property).
 Now let's talk about the getter functions in the the `defaultProps` object. Since functions are more flexible than values this adds a
 bit of additional complexity and power. The real reason though for having them has to do with MobX. If we were to copy the `foo.bar`
@@ -78,13 +78,13 @@ component that creates the `defaultProps` object) might be rendered more often t
 
 One of the features of `DefaultPropsContext` is that it allows nesting. Any nested `DefaultPropsContext` instance should extend and
 override the default properties set by any parent `DefaultPropsContext` instances. You can code this manually by merging dictionaries
-but a more convenient way is to use the `NestedDefaultPropsProvider` component. In the example below, we add an additional instance
+but a more convenient way is to use the `DefaultPropsProvider` component. In the example below, we add an additional instance
 of `MyComponent` with name "exampleInner" that uses an updated and extended set of default properties (where the color is "blue" and
 there is an additional `baz` property).
 
 ```
 import { observer } from "mobx-react";
-import { NestedDefaultPropsProvider } from "react-default-props-context";
+import { DefaultPropsProvider } from "react-default-props-context";
 
 const MyFrame = observer(() => {
   const foo = getFoo();
@@ -100,19 +100,19 @@ const MyFrame = observer(() => {
   };
 
   return (
-    <NestedDefaultPropsProvider value={defaultProps}>
+    <DefaultPropsProvider value={defaultProps}>
       <MyComponent name="example"/>
-      <NestedDefaultPropsProvider value={defaultPropsInner}>
+      <DefaultPropsProvider value={defaultPropsInner}>
         <MyComponent name="exampleInner/>
-      </NestedDefaultPropsProvider>
-    </NestedDefaultPropsProvider>
+      </DefaultPropsProvider>
+    </DefaultPropsProvider>
   )
 })
 ```
 
 ## What happens when a default property is overwritten?
 
-In one of the examples above we used `color="green"` to override the default value of `color`. This has the effect of (automatically) inserting a `NestedDefaultPropsProvider` that provides the new value. This means that also children of the receiving component see the overridden value!
+In one of the examples above we used `color="green"` to override the default value of `color`. This has the effect of (automatically) inserting a `DefaultPropsProvider` that provides the new value. This means that also children of the receiving component see the overridden value!
 
 ## Discussion
 
